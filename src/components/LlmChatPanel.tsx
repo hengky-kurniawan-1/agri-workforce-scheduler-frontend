@@ -7,6 +7,7 @@ export function LlmChatPanel() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
   const listRef = useRef<HTMLDivElement>(null);
+  const isSendingRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     const el = listRef.current;
@@ -15,21 +16,26 @@ export function LlmChatPanel() {
 
   const handleSend = useCallback(async () => {
     const content = draft.trim();
-    if (!content || submitting) return;
+    if (!content || submitting || isSendingRef.current) return;
 
+    const currentDraft = draft;
+    isSendingRef.current = true;
     const userMessage: ChatMessage = { role: 'user', content };
     const nextMessages = [...messages, userMessage];
     setMessages(nextMessages);
-    setDraft('');
     clearError();
 
     try {
       const reply = await send(nextMessages);
       setMessages((prev) => [...prev, { role: 'assistant', content: reply }]);
+      setDraft('');
       requestAnimationFrame(scrollToBottom);
     } catch {
       setMessages((prev) => (prev.length && prev[prev.length - 1]?.role === 'user' ? prev.slice(0, -1) : prev));
+      setDraft(currentDraft);
       requestAnimationFrame(scrollToBottom);
+    } finally {
+      isSendingRef.current = false;
     }
   }, [clearError, draft, messages, scrollToBottom, send, submitting]);
 
