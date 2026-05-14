@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAssignments, useScenario } from '@/api/hooks';
+import { buildAgronomistRoutes } from '@/lib/routeGeometry';
+import { AgronomistRouteList } from './AgronomistRouteList';
 import { DecisionTimeline } from './DecisionTimeline';
 import { ForceAssignPanel } from './ForceAssignPanel';
 import { ScenarioChatPanel } from './ScenarioChatPanel';
@@ -20,6 +22,7 @@ export function Dashboard() {
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const tasks = scenario?.tasks ?? [];
+  const fields = scenario?.fields ?? [];
   const assignments = assignmentsResult?.assignments ?? [];
   const agronomists = scenario?.agronomists ?? [];
   const hybridSteps = assignmentsResult?.hybrid_steps ?? [];
@@ -54,6 +57,11 @@ export function Dashboard() {
     [sid, assignments]
   );
 
+  const routes = useMemo(
+    () => buildAgronomistRoutes(agronomists, tasks, fields, assignments),
+    [agronomists, tasks, fields, assignments]
+  );
+
   const loading = scenarioLoading || assignmentsLoading;
   const error = scenarioError ?? assignmentsError;
 
@@ -65,81 +73,65 @@ export function Dashboard() {
     void refetchAssignments({ refresh: false });
   }, [refetchAssignments]);
 
+  const hasFields = fields.length > 0;
+
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="font-display text-3xl font-semibold tracking-tight text-soil-900 sm:text-4xl">
-            Operations dashboard
-          </h1>
-          <p className="mt-2 max-w-2xl text-soil-600">
-            Scenario tasks, OR-Tools schedule, and LLM reasoning from the hybrid solver. Use force-assign to pin a
-            worker and re-optimize.
-          </p>
+    <div className="mx-auto flex w-full max-w-[1920px] min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 lg:px-6 xl:min-h-[calc(100vh-9.5rem)] xl:px-8">
+      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-soil-200/80 pb-4">
+        <div className="min-w-0">
+          <h1 className="truncate text-lg font-semibold tracking-tight text-soil-900">Operations</h1>
+          <p className="mt-0.5 text-xs text-soil-500">Scenario, schedule, and assistant</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm font-medium text-soil-700">Scenario</span>
-          {SCENARIO_IDS.map((id) => (
-            <button
-              key={id}
-              type="button"
-              onClick={() => setSid(id)}
-              className={`rounded-xl px-4 py-2 text-sm font-semibold shadow-sm transition ${
-                sid === id
-                  ? 'bg-leaf-600 text-white ring-2 ring-leaf-300'
-                  : 'border border-soil-200 bg-white text-soil-800 hover:border-soil-300'
-              }`}
-            >
-              {id}
-            </button>
-          ))}
+          <span className="text-xs font-medium text-soil-500">Scenario</span>
+          <div className="flex gap-1">
+            {SCENARIO_IDS.map((id) => (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setSid(id)}
+                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                  sid === id
+                    ? 'bg-soil-900 text-white'
+                    : 'border border-soil-200 bg-white text-soil-700 hover:border-soil-300'
+                }`}
+              >
+                {id}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={() => void refetchAssignments({ refresh: true })}
             disabled={assignmentsLoading}
-            className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-semibold text-amber-900 hover:bg-amber-100 disabled:opacity-50"
+            className="rounded-lg border border-soil-200 bg-white px-3 py-1.5 text-xs font-medium text-soil-800 hover:bg-soil-50 disabled:opacity-50"
           >
-            Recompute (LLM + solver)
+            Recompute
           </button>
         </div>
       </header>
 
-      {scenario?.fields && scenario.fields.length > 0 ? (
-        <section className="mb-8" aria-label="Field map and agronomist routes">
-          <ScenarioRouteMap
-            fields={scenario.fields}
-            agronomists={agronomists}
-            tasks={tasks}
-            assignments={assignments}
-            mapKey={routeMapKey}
-          />
-        </section>
-      ) : scenario && !scenarioLoading ? (
-        <p className="mb-8 rounded-xl border border-soil-200 bg-soil-50/80 px-4 py-3 text-sm text-soil-700">
-          Field coordinates are not included in the scenario API response. Regenerate the client from an API that
-          exposes <code className="rounded bg-soil-100 px-1 font-mono text-xs">ScenarioInfo.fields</code>.
-        </p>
-      ) : null}
+      <div className="flex min-h-0 flex-1 flex-col gap-4 max-xl:flex-col xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(260px,22vw)_1fr_minmax(280px,24vw)] xl:gap-5">
+        <aside className="max-xl:order-2 flex min-h-0 flex-col gap-4 overflow-y-auto xl:col-start-1 xl:row-start-1 xl:h-full xl:max-h-full">
+          <AgronomistRouteList routes={routes} />
 
-      <div className="grid gap-8 lg:grid-cols-5">
-        <div className="lg:col-span-2">
-          <h2 className="mb-3 font-display text-lg font-semibold text-soil-800">Tasks</h2>
-          <TaskList
-            tasks={tasks}
-            assignments={assignments}
-            agronomists={agronomists}
-            selectedTaskId={selectedTaskId}
-            onSelectTask={setSelectedTaskId}
-            loading={loading}
-            error={error}
-          />
-        </div>
+          <div>
+            <h2 className="mb-2 text-xs font-semibold uppercase tracking-wide text-soil-500">Tasks</h2>
+            <TaskList
+              tasks={tasks}
+              assignments={assignments}
+              agronomists={agronomists}
+              selectedTaskId={selectedTaskId}
+              onSelectTask={setSelectedTaskId}
+              loading={loading}
+              error={error}
+            />
+          </div>
 
-        <div className="space-y-6 lg:col-span-3">
           {assignmentsResult ? (
-            <div className="rounded-2xl border border-soil-200/80 bg-white/70 p-5 shadow-sm backdrop-blur-sm">
-              <h2 className="font-display text-lg font-semibold text-soil-900">Solver result</h2>
-              <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
+            <div className="rounded-lg border border-soil-200 bg-white p-4">
+              <h2 className="text-sm font-semibold text-soil-900">Solver</h2>
+              <dl className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
                 <div>
                   <dt className="text-soil-500">Feasible</dt>
                   <dd className="font-medium text-soil-900">{assignmentsResult.feasible ? 'Yes' : 'No'}</dd>
@@ -160,20 +152,20 @@ export function Dashboard() {
             </div>
           ) : null}
 
-          <div className="rounded-2xl border border-soil-200/80 bg-white/70 p-5 shadow-sm backdrop-blur-sm">
-            <h2 className="font-display text-lg font-semibold text-soil-900">Selected task</h2>
+          <div className="rounded-lg border border-soil-200 bg-white p-4">
+            <h2 className="text-sm font-semibold text-soil-900">Selected task</h2>
             {!selectedTaskId ? (
-              <p className="mt-3 text-sm text-soil-600">Select a task from the list.</p>
+              <p className="mt-2 text-xs text-soil-600">Select a task from the list.</p>
             ) : (
-              <div className="mt-3 space-y-4 text-sm text-soil-800">
+              <div className="mt-2 space-y-3 text-xs text-soil-800">
                 <p>
                   <span className="text-soil-500">Task ID</span>{' '}
                   <span className="font-mono font-medium">{selectedTaskId}</span>
                 </p>
                 {selectedAssignment ? (
-                  <div className="rounded-xl bg-soil-50 p-4">
+                  <div className="rounded-md border border-soil-100 bg-soil-50/80 p-3">
                     <p className="font-medium text-soil-900">Assignment</p>
-                    <ul className="mt-2 space-y-1 text-soil-700">
+                    <ul className="mt-1.5 space-y-1 text-soil-700">
                       <li>Agronomist: {selectedAssignment.agronomist_id}</li>
                       <li>Start minute: {selectedAssignment.start_minute}</li>
                       <li>Travel minutes: {selectedAssignment.travel_minutes}</li>
@@ -186,11 +178,11 @@ export function Dashboard() {
                   <p className="text-soil-600">No assignment row for this task in the current result.</p>
                 )}
                 {selectedHybrid ? (
-                  <div className="rounded-xl border border-leaf-200 bg-leaf-50/50 p-4">
-                    <p className="font-medium text-soil-900">LLM step (same task)</p>
-                    <p className="mt-2 text-soil-700">{selectedHybrid.llm_reasoning}</p>
-                    <p className="mt-2 text-xs text-soil-600">
-                      Suggested agronomist: {selectedHybrid.llm_agronomist_id} · OR-Tools check:{' '}
+                  <div className="rounded-md border border-leaf-200/80 bg-leaf-50/50 p-3">
+                    <p className="font-medium text-soil-900">LLM step</p>
+                    <p className="mt-1.5 text-soil-700">{selectedHybrid.llm_reasoning}</p>
+                    <p className="mt-1.5 text-[11px] text-soil-600">
+                      Suggested: {selectedHybrid.llm_agronomist_id} · OR-Tools:{' '}
                       {selectedHybrid.ortools_feasible ? 'ok' : 'failed'} (score {selectedHybrid.ortools_score.toFixed(2)})
                     </p>
                   </div>
@@ -208,10 +200,36 @@ export function Dashboard() {
             onSuccess={afterMutation}
           />
 
-          <ScenarioChatPanel onMapUpdated={onChatMapUpdated} />
-
           <DecisionTimeline steps={hybridSteps} />
-        </div>
+        </aside>
+
+        <section
+          aria-label="Field map"
+          className="flex max-xl:order-1 min-h-[420px] flex-1 flex-col xl:col-start-2 xl:row-start-1 xl:h-full xl:min-h-0"
+        >
+          {hasFields ? (
+            <ScenarioRouteMap
+              fields={fields}
+              tasks={tasks}
+              assignments={assignments}
+              routes={routes}
+              mapKey={routeMapKey}
+            />
+          ) : scenario && !scenarioLoading ? (
+            <div className="flex min-h-[420px] flex-1 flex-col justify-center rounded-lg border border-soil-200 bg-soil-50/80 px-4 py-6 text-center text-sm text-soil-600 xl:min-h-0">
+              Field coordinates are not included in this scenario. Regenerate the client from an API that exposes{' '}
+              <code className="rounded bg-soil-100 px-1 font-mono text-xs">ScenarioInfo.fields</code>.
+            </div>
+          ) : (
+            <div className="flex min-h-[240px] flex-1 items-center justify-center rounded-lg border border-dashed border-soil-200 bg-white/60 text-sm text-soil-500 xl:min-h-0">
+              Loading scenario…
+            </div>
+          )}
+        </section>
+
+        <aside className="flex max-xl:order-3 min-h-0 flex-col max-xl:min-h-[min(22rem,45vh)] xl:col-start-3 xl:row-start-1 xl:h-full">
+          <ScenarioChatPanel onMapUpdated={onChatMapUpdated} className="min-h-0 flex-1" />
+        </aside>
       </div>
     </div>
   );

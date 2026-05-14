@@ -26,17 +26,17 @@ export function ForceAssignPanel({ sid, agronomists, selectedTaskId, onSuccess }
   }
 
   return (
-    <section className="rounded-2xl border border-soil-200/80 bg-white/70 p-5 shadow-sm">
-      <h3 className="font-display text-base font-semibold text-soil-900">Force assign (override solver)</h3>
-      <p className="mt-1 text-xs text-soil-600">
-        POST <code className="rounded bg-soil-100 px-1">/scenarios/{sid}/force-assign</code> — requires a cached
-        decision (load assignments first).
+    <section className="rounded-lg border border-soil-200 bg-white p-4">
+      <h3 className="text-sm font-semibold text-soil-900">Force assign</h3>
+      <p className="mt-1 text-[11px] text-soil-500">
+        Override solver for the selected task ·{' '}
+        <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">POST /scenarios/{sid}/force-assign</code>
       </p>
-      <form className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-end" onSubmit={(e) => void handleSubmit(e)}>
-        <label className="flex min-w-[200px] flex-1 flex-col gap-1 text-sm">
-          <span className="font-medium text-soil-700">Agronomist</span>
+      <form className="mt-3 flex flex-col gap-2" onSubmit={(e) => void handleSubmit(e)}>
+        <label className="flex min-w-0 flex-col gap-1 text-xs">
+          <span className="font-medium text-soil-600">Agronomist</span>
           <select
-            className="rounded-xl border border-soil-300 bg-white px-3 py-2 text-soil-900 shadow-sm focus:border-leaf-500 focus:outline-none focus:ring-2 focus:ring-leaf-200"
+            className="rounded-md border border-soil-200 bg-white px-3 py-2 text-sm text-soil-900 focus:border-soil-400 focus:outline-none focus:ring-1 focus:ring-soil-300"
             value={agronomistId}
             onChange={(e) => setAgronomistId(e.target.value)}
             disabled={!selectedTaskId || submitting}
@@ -52,7 +52,7 @@ export function ForceAssignPanel({ sid, agronomists, selectedTaskId, onSuccess }
         <button
           type="submit"
           disabled={submitting || !selectedTaskId || !agronomistId}
-          className="rounded-xl bg-soil-800 px-5 py-2 text-sm font-semibold text-white shadow-sm hover:bg-soil-900 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-md bg-soil-900 px-4 py-2 text-xs font-medium text-white hover:bg-soil-800 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {submitting ? 'Submitting…' : 'Force assign'}
         </button>

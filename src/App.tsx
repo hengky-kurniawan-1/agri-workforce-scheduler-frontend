@@ -4,16 +4,16 @@ import { ScenariosPage } from '@/pages/ScenariosPage';
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   [
-    'rounded-xl px-3 py-2 text-sm font-medium transition',
-    isActive ? 'bg-leaf-600 text-white shadow-sm' : 'text-soil-700 hover:bg-soil-100',
+    'rounded-lg px-3 py-2 text-sm font-medium transition',
+    isActive ? 'bg-soil-900 text-white' : 'text-soil-700 hover:bg-soil-100',
   ].join(' ');
 
 export function App() {
   return (
     <BrowserRouter>
       <div className="flex min-h-screen flex-col">
-        <header className="border-b border-soil-200/80 bg-white/80 backdrop-blur-md">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+        <header className="border-b border-soil-200/80 bg-white/90 backdrop-blur-md">
+          <div className="mx-auto flex w-full max-w-[1920px] flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-6 xl:px-8">
             <Link to="/" className="font-display text-lg font-semibold text-soil-900">
               Agri Workforce Scheduler
             </Link>
@@ -27,14 +27,16 @@ export function App() {
             </nav>
           </div>
         </header>
-        <main className="flex-1">
+        <main className="flex min-h-0 flex-1 flex-col">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/scenarios" element={<ScenariosPage />} />
           </Routes>
         </main>
-        <footer className="border-t border-soil-200/60 bg-white/50 py-6 text-center text-xs text-soil-500">
-          Configure <code className="rounded bg-soil-100 px-1">VITE_API_URL</code> to point at your API.
+        <footer className="border-t border-soil-200/60 bg-white/80 py-4 text-center text-xs text-soil-500">
+          <div className="mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-6 xl:px-8">
+            Configure <code className="rounded bg-soil-100 px-1">VITE_API_URL</code> to point at your API.
+          </div>
         </footer>
       </div>
     </BrowserRouter>
