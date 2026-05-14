@@ -1,5 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAssignments, useScenario } from '@/api/hooks';
+import {
+  SCENARIO_IDS,
+  resolvedScenarioId,
+  scenarioSearchParamNeedsReplace,
+  urlSearchParamsWithScenario,
+} from '@/lib/scenarioQuery';
 import { buildAgronomistRoutes } from '@/lib/routeGeometry';
 import { AgronomistRouteList } from './AgronomistRouteList';
 import { DecisionTimeline } from './DecisionTimeline';
@@ -8,10 +15,15 @@ import { ScenarioChatPanel } from './ScenarioChatPanel';
 import { ScenarioRouteMap } from './ScenarioRouteMap';
 import { TaskList } from './TaskList';
 
-const SCENARIO_IDS = ['1', '2'] as const;
-
 export function Dashboard() {
-  const [sid, setSid] = useState<string>('1');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sid = resolvedScenarioId(searchParams);
+
+  useEffect(() => {
+    if (!scenarioSearchParamNeedsReplace(searchParams)) return;
+    setSearchParams(urlSearchParamsWithScenario(searchParams, '1'), { replace: true });
+  }, [searchParams, setSearchParams]);
+
   const { data: scenario, loading: scenarioLoading, error: scenarioError } = useScenario(sid);
   const {
     data: assignmentsResult,
@@ -89,7 +101,9 @@ export function Dashboard() {
               <button
                 key={id}
                 type="button"
-                onClick={() => setSid(id)}
+                onClick={() =>
+                  setSearchParams(urlSearchParamsWithScenario(searchParams, id), { replace: true })
+                }
                 className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                   sid === id
                     ? 'bg-soil-900 text-white'
