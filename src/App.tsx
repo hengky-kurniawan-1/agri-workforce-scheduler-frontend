@@ -1,6 +1,8 @@
 import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom';
-import { HomePage } from '@/pages/HomePage';
+import { Dashboard } from '@/components/Dashboard';
+import { OperationsLayout } from '@/pages/OperationsLayout';
 import { ScenariosPage } from '@/pages/ScenariosPage';
+import { TasksPage } from '@/pages/TasksPage';
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
   [
@@ -21,6 +23,9 @@ export function App() {
               <NavLink to="/" className={navClass} end>
                 Dashboard
               </NavLink>
+              <NavLink to="/tasks" className={navClass}>
+                Tasks
+              </NavLink>
               <NavLink to="/scenarios" className={navClass}>
                 Scenarios
               </NavLink>
@@ -29,7 +34,10 @@ export function App() {
         </header>
         <main className="flex min-h-0 flex-1 flex-col">
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route element={<OperationsLayout />}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/tasks" element={<TasksPage />} />
+            </Route>
             <Route path="/scenarios" element={<ScenariosPage />} />
           </Routes>
         </main>
