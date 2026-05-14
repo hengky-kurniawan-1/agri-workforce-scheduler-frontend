@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useAssignments, useScenario } from '@/api/hooks';
 import { DecisionTimeline } from './DecisionTimeline';
 import { ForceAssignPanel } from './ForceAssignPanel';
+import { LlmChatPanel } from './LlmChatPanel';
 import { ScenarioRouteMap } from './ScenarioRouteMap';
 import { TaskList } from './TaskList';
 
@@ -206,6 +207,8 @@ export function Dashboard() {
           <DecisionTimeline steps={hybridSteps} />
         </div>
       </div>
+
+      <LlmChatPanel />
     </div>
   );
 }

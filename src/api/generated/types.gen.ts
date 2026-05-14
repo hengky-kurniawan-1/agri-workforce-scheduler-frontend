@@ -25,6 +25,21 @@ export type AssignmentsResult = {
     hybrid_steps: Array<HybridStep>;
 };
 
+export type ChatMessage = {
+    role: 'system' | 'user' | 'assistant';
+    content: string;
+};
+
+export type role = 'system' | 'user' | 'assistant';
+
+export type ChatRequest = {
+    messages: Array<ChatMessage>;
+};
+
+export type ChatResponse = {
+    reply: string;
+};
+
 export type Field = {
     id: string;
     name: string;
@@ -83,6 +98,12 @@ export type ValidationError = {
 };
 
 export type HealthHealthGetResponse = (unknown);
+
+export type PostChatChatPostData = {
+    requestBody: ChatRequest;
+};
+
+export type PostChatChatPostResponse = (ChatResponse);
 
 export type GetScenarioScenariosSidGetData = {
     sid: string;

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, GetScenarioScenariosSidGetData, GetScenarioScenariosSidGetResponse, GetScenarioAssignmentsScenariosSidAssignmentsGetData, GetScenarioAssignmentsScenariosSidAssignmentsGetResponse, PostForceAssignScenariosSidForceAssignPostData, PostForceAssignScenariosSidForceAssignPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, PostChatChatPostData, PostChatChatPostResponse, GetScenarioScenariosSidGetData, GetScenarioScenariosSidGetResponse, GetScenarioAssignmentsScenariosSidAssignmentsGetData, GetScenarioAssignmentsScenariosSidAssignmentsGetResponse, PostForceAssignScenariosSidForceAssignPostData, PostForceAssignScenariosSidForceAssignPostResponse } from './types.gen';
 
 /**
  * Health
@@ -14,6 +14,25 @@ export const healthHealthGet = (): CancelablePromise<HealthHealthGetResponse> =>
     return __request(OpenAPI, {
         method: 'GET',
         url: '/health'
+    });
+};
+
+/**
+ * Post Chat
+ * @param data The data for the request.
+ * @param data.requestBody
+ * @returns ChatResponse Successful Response
+ * @throws ApiError
+ */
+export const postChatChatPost = (data: PostChatChatPostData): CancelablePromise<PostChatChatPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/chat',
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
     });
 };
 

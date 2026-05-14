@@ -4,9 +4,10 @@ import { ApiError } from './generated/core/ApiError';
 import {
   getScenarioAssignmentsScenariosSidAssignmentsGet,
   getScenarioScenariosSidGet,
+  postChatChatPost,
   postForceAssignScenariosSidForceAssignPost,
 } from './generated';
-import type { AssignmentsResult, ForceAssignRequest, ScenarioInfo } from './generated';
+import type { AssignmentsResult, ChatMessage, ForceAssignRequest, ScenarioInfo } from './generated';
 
 type AsyncState<T> = {
   data: T | null;
@@ -140,4 +141,27 @@ export function useForceAssign(sid: string | null) {
   );
 
   return { mutate, submitting, error };
+}
+
+export function useLlmChat() {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const send = useCallback(async (messages: ChatMessage[]) => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await postChatChatPost({ requestBody: { messages } });
+      return res.reply;
+    } catch (e) {
+      setError(getErrorMessage(e));
+      throw e;
+    } finally {
+      setSubmitting(false);
+    }
+  }, []);
+
+  const clearError = useCallback(() => setError(null), []);
+
+  return { send, submitting, error, clearError };
 }
