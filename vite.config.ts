@@ -24,6 +24,10 @@ export default defineConfig(({ mode }) => {
           target: apiTarget,
           changeOrigin: true,
         },
+        '/chat': {
+          target: apiTarget,
+          changeOrigin: true,
+        },
       },
     },
   };

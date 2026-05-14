@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useAssignments, useScenario } from '@/api/hooks';
 import { DecisionTimeline } from './DecisionTimeline';
 import { ForceAssignPanel } from './ForceAssignPanel';
+import { ScenarioChatPanel } from './ScenarioChatPanel';
 import { ScenarioRouteMap } from './ScenarioRouteMap';
 import { TaskList } from './TaskList';
 
@@ -59,6 +60,10 @@ export function Dashboard() {
   const afterMutation = () => {
     void refetchAssignments({ refresh: false });
   };
+
+  const onChatMapUpdated = useCallback(() => {
+    void refetchAssignments({ refresh: false });
+  }, [refetchAssignments]);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
@@ -202,6 +207,8 @@ export function Dashboard() {
             selectedTaskId={selectedTaskId}
             onSuccess={afterMutation}
           />
+
+          <ScenarioChatPanel onMapUpdated={onChatMapUpdated} />
 
           <DecisionTimeline steps={hybridSteps} />
         </div>

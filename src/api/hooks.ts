@@ -4,9 +4,10 @@ import { ApiError } from './generated/core/ApiError';
 import {
   getScenarioAssignmentsScenariosSidAssignmentsGet,
   getScenarioScenariosSidGet,
+  postChatChatPost,
   postForceAssignScenariosSidForceAssignPost,
 } from './generated';
-import type { AssignmentsResult, ForceAssignRequest, ScenarioInfo } from './generated';
+import type { AssignmentsResult, ChatMessage, ChatResponse, ForceAssignRequest, ScenarioInfo } from './generated';
 
 type AsyncState<T> = {
   data: T | null;
@@ -140,4 +141,37 @@ export function useForceAssign(sid: string | null) {
   );
 
   return { mutate, submitting, error };
+}
+
+type UseChatOpts = {
+  /** Called when the server sets `flags.map_updated` (assignments changed; refetch to refresh the map). */
+  onMapUpdated?: () => void;
+};
+
+export function useChat(opts?: UseChatOpts) {
+  const onMapUpdated = opts?.onMapUpdated;
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const send = useCallback(
+    async (messages: ChatMessage[]): Promise<ChatResponse> => {
+      setSubmitting(true);
+      setError(null);
+      try {
+        const res = await postChatChatPost({ requestBody: { messages } });
+        if (res.flags?.map_updated) {
+          onMapUpdated?.();
+        }
+        return res;
+      } catch (e) {
+        setError(getErrorMessage(e));
+        throw e;
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [onMapUpdated]
+  );
+
+  return { send, submitting, error };
 }
