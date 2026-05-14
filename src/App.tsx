@@ -1,0 +1,42 @@
+import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom';
+import { HomePage } from '@/pages/HomePage';
+import { ScenariosPage } from '@/pages/ScenariosPage';
+
+const navClass = ({ isActive }: { isActive: boolean }) =>
+  [
+    'rounded-xl px-3 py-2 text-sm font-medium transition',
+    isActive ? 'bg-leaf-600 text-white shadow-sm' : 'text-soil-700 hover:bg-soil-100',
+  ].join(' ');
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <div className="flex min-h-screen flex-col">
+        <header className="border-b border-soil-200/80 bg-white/80 backdrop-blur-md">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
+            <Link to="/" className="font-display text-lg font-semibold text-soil-900">
+              Agri Workforce Scheduler
+            </Link>
+            <nav className="flex flex-wrap gap-1" aria-label="Main">
+              <NavLink to="/" className={navClass} end>
+                Dashboard
+              </NavLink>
+              <NavLink to="/scenarios" className={navClass}>
+                Scenarios
+              </NavLink>
+            </nav>
+          </div>
+        </header>
+        <main className="flex-1">
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/scenarios" element={<ScenariosPage />} />
+          </Routes>
+        </main>
+        <footer className="border-t border-soil-200/60 bg-white/50 py-6 text-center text-xs text-soil-500">
+          Configure <code className="rounded bg-soil-100 px-1">VITE_API_URL</code> to point at your API.
+        </footer>
+      </div>
+    </BrowserRouter>
+  );
+}
