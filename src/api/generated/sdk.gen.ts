@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, PostChatChatPostData, PostChatChatPostResponse, GetScenarioScenariosSidGetData, GetScenarioScenariosSidGetResponse, GetScenarioAssignmentsScenariosSidAssignmentsGetData, GetScenarioAssignmentsScenariosSidAssignmentsGetResponse, PostForceAssignScenariosSidForceAssignPostData, PostForceAssignScenariosSidForceAssignPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, PostChatChatPostData, PostChatChatPostResponse, GetScenarioScenariosSidGetData, GetScenarioScenariosSidGetResponse, GetScenarioAssignmentsScenariosSidAssignmentsGetData, GetScenarioAssignmentsScenariosSidAssignmentsGetResponse, PostForceAssignScenariosSidForceAssignPostData, PostForceAssignScenariosSidForceAssignPostResponse, PostAddTaskScenariosSidAddTaskPostData, PostAddTaskScenariosSidAddTaskPostResponse, PostReoptimizeScenariosSidReoptimizePostData, PostReoptimizeScenariosSidReoptimizePostResponse } from './types.gen';
 
 /**
  * Health
@@ -62,7 +62,7 @@ export const getScenarioScenariosSidGet = (data: GetScenarioScenariosSidGetData)
  * @param data.sid
  * @param data.agronomistId If set, only assignments for this agronomist are returned.
  * @param data.refresh If true, recompute with LLM+solver and overwrite the stored decision. Cached GET skips that when a row exists.
- * @returns AssignmentsResult Successful Response
+ * @returns unknown Successful Response
  * @throws ApiError
  */
 export const getScenarioAssignmentsScenariosSidAssignmentsGet = (data: GetScenarioAssignmentsScenariosSidAssignmentsGetData): CancelablePromise<GetScenarioAssignmentsScenariosSidAssignmentsGetResponse> => {
@@ -99,6 +99,51 @@ export const postForceAssignScenariosSidForceAssignPost = (data: PostForceAssign
         },
         body: data.requestBody,
         mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Post Add Task
+ * Insert a new task with LNS (freeze prior schedule within a time neighborhood).
+ * @param data The data for the request.
+ * @param data.sid
+ * @param data.requestBody
+ * @returns AddTaskResponse Successful Response
+ * @throws ApiError
+ */
+export const postAddTaskScenariosSidAddTaskPost = (data: PostAddTaskScenariosSidAddTaskPostData): CancelablePromise<PostAddTaskScenariosSidAddTaskPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/scenarios/{sid}/add-task',
+        path: {
+            sid: data.sid
+        },
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
+
+/**
+ * Post Reoptimize
+ * Full LLM + CP-SAT re-solve on canonical tasks plus any extra tasks (nightly / manual).
+ * @param data The data for the request.
+ * @param data.sid
+ * @returns Decision Successful Response
+ * @throws ApiError
+ */
+export const postReoptimizeScenariosSidReoptimizePost = (data: PostReoptimizeScenariosSidReoptimizePostData): CancelablePromise<PostReoptimizeScenariosSidReoptimizePostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/scenarios/{sid}/reoptimize',
+        path: {
+            sid: data.sid
+        },
         errors: {
             422: 'Validation Error'
         }
