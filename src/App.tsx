@@ -1,5 +1,6 @@
 import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom';
 import { Dashboard } from '@/components/Dashboard';
+import { FieldsPage } from '@/pages/FieldsPage';
 import { OperationsLayout } from '@/pages/OperationsLayout';
 import { ScenariosPage } from '@/pages/ScenariosPage';
 import { TasksPage } from '@/pages/TasksPage';
@@ -23,6 +24,9 @@ export function App() {
               <NavLink to="/" className={navClass} end>
                 Dashboard
               </NavLink>
+              <NavLink to="/fields" className={navClass}>
+                Fields
+              </NavLink>
               <NavLink to="/tasks" className={navClass}>
                 Tasks
               </NavLink>
@@ -36,6 +40,7 @@ export function App() {
           <Routes>
             <Route element={<OperationsLayout />}>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/fields" element={<FieldsPage />} />
               <Route path="/tasks" element={<TasksPage />} />
             </Route>
             <Route path="/scenarios" element={<ScenariosPage />} />
