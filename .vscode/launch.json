@@ -1,22 +1,19 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {
-      "name": "Chrome: start dev server + debug",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}",
-      "sourceMaps": true,
-      "preLaunchTask": "npm: dev"
-    },
-    {
-      "name": "Chrome: attach to Vite (dev server already running)",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}",
-      "sourceMaps": true
-    }
+      {
+          "name": "Launch Next.js Dev Server",
+          "type": "node",
+          "request": "launch",
+          "cwd": "${workspaceFolder}",
+          "env": {
+              "NODE_ENV": "development"
+          },
+          "console": "integratedTerminal",
+          "internalConsoleOptions": "neverOpen",
+          "restart": true,
+          "runtimeExecutable": "pnpm",
+          "runtimeArgs": ["run", "dev"]
+      }
   ]
 }
