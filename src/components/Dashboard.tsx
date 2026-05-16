@@ -8,24 +8,23 @@ import { ScenarioRouteMap } from './ScenarioRouteMap';
 
 export function Dashboard() {
   const {
-    sid,
-    scenario,
+    schedule,
     tasks,
     fields,
     assignments,
     agronomists,
-    scenarioLoading,
+    scheduleLoading,
     refetchAssignments,
-    refetchScenario,
+    refetchSchedule,
   } = useOperationsOutlet();
 
   const routeMapKey = useMemo(
     () =>
-      `${sid}:${assignments
+      assignments
         .map((a) => `${a.task_id}:${a.agronomist_id}:${a.start_minute}`)
         .sort()
-        .join('|')}`,
-    [sid, assignments]
+        .join('|'),
+    [assignments]
   );
 
   const routes = useMemo(
@@ -89,12 +88,14 @@ export function Dashboard() {
 
   const onChatFlags = useCallback(
     (flags: ChatUiFlags) => {
-      if (flags.schedule_updated) void refetchScenario();
+      if (flags.schedule_updated || flags.map_updated || flags.roster_updated) {
+        void refetchSchedule();
+      }
       if (flags.map_updated || flags.schedule_updated) {
         void refetchAssignments({ refresh: false });
       }
     },
-    [refetchScenario, refetchAssignments]
+    [refetchSchedule, refetchAssignments]
   );
 
   const hasFields = fields.length > 0;
@@ -122,14 +123,14 @@ export function Dashboard() {
             routes={visibleRoutes}
             mapKey={routeMapKey}
           />
-        ) : scenario && !scenarioLoading ? (
+        ) : schedule && !scheduleLoading ? (
           <div className="flex min-h-[420px] flex-1 flex-col justify-center rounded-lg border border-soil-200 bg-soil-50/80 px-4 py-6 text-center text-sm text-soil-600 xl:min-h-0">
-            Field coordinates are not included in this scenario. Regenerate the client from an API that exposes{' '}
-            <code className="rounded bg-soil-100 px-1 font-mono text-xs">ScenarioInfo.fields</code>.
+            Field coordinates are not included in this schedule. Regenerate the client from an API that exposes{' '}
+            <code className="rounded bg-soil-100 px-1 font-mono text-xs">ScheduleInfo.fields</code>.
           </div>
         ) : (
           <div className="flex min-h-[240px] flex-1 items-center justify-center rounded-lg border border-dashed border-soil-200 bg-white/60 text-sm text-soil-500 xl:min-h-0">
-            Loading scenario…
+            Loading schedule…
           </div>
         )}
       </section>

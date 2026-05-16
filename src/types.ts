@@ -4,6 +4,6 @@ export type {
   AssignmentsResult,
   ForceAssignRequest,
   HybridStep,
-  ScenarioInfo,
+  ScheduleInfo,
   Task,
 } from './api/generated';

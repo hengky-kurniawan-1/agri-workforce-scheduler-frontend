@@ -65,17 +65,14 @@ export function buildAgronomistRoutes(
     const mine = byAgr.get(agr.id) ?? [];
     const stops: RouteStop[] = [];
 
-    const homeField = fById.get(agr.home_field_id);
-    if (homeField) {
-      const [lat, lng] = homeField.location;
-      stops.push({
-        kind: 'home',
-        fieldId: homeField.id,
-        fieldName: homeField.name,
-        lat,
-        lng,
-      });
-    }
+    const [homeLat, homeLng] = agr.home_location;
+    stops.push({
+      kind: 'home',
+      fieldId: `home:${agr.id}`,
+      fieldName: `${agr.name} (home)`,
+      lat: homeLat,
+      lng: homeLng,
+    });
 
     for (const as of mine) {
       const task = tById.get(as.task_id);

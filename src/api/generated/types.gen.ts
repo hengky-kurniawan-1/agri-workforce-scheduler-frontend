@@ -20,7 +20,13 @@ export type Agronomist = {
     id: string;
     name: string;
     skills: Array<('general' | 'pest' | 'soil' | 'irrigation')>;
-    home_field_id: string;
+    /**
+     * lat, lon
+     */
+    home_location: [
+        number,
+        number
+    ];
     workday_minutes?: number;
 };
 
@@ -32,6 +38,14 @@ export type Assignment = {
     reasoning?: string;
 };
 
+export type AssignmentsResult = {
+    feasible: boolean;
+    score: number;
+    assignments: Array<Assignment>;
+    relaxations_applied: Array<(string)>;
+    hybrid_steps: Array<HybridStep>;
+};
+
 export type ChatMessage = {
     role: 'system' | 'user' | 'assistant';
     content: string;
@@ -41,10 +55,6 @@ export type role = 'system' | 'user' | 'assistant';
 
 export type ChatRequest = {
     messages: Array<ChatMessage>;
-    /**
-     * Default scenario for chat tools (e.g. add_task_with_lns) when not specified in user text.
-     */
-    scenario_id?: ('1' | '2' | null);
 };
 
 export type ChatResponse = {
@@ -53,13 +63,21 @@ export type ChatResponse = {
 };
 
 export type ChatUiFlags = {
+    /**
+     * True when the LLM successfully added a field via add_field; client should refetch GET /fields (or GET /schedule) and rerender the map.
+     */
     map_updated?: boolean;
+    /**
+     * True when add_task_with_lns or force_assign updated the saved schedule.
+     */
     schedule_updated?: boolean;
+    /**
+     * True when the LLM successfully added an agronomist via add_agronomist.
+     */
     roster_updated?: boolean;
 };
 
 export type Decision = {
-    scenario_id: string;
     feasible: boolean;
     score: number;
     assignments: Array<Assignment>;
@@ -114,8 +132,7 @@ export type kind = 'chat' | 'reoptimize' | 'assignments';
 
 export type status = 'pending' | 'running' | 'completed' | 'failed';
 
-export type ScenarioInfo = {
-    scenario_id: string;
+export type ScheduleInfo = {
     agronomists: Array<Agronomist>;
     tasks: Array<Task>;
     fields?: Array<Field>;
@@ -164,13 +181,9 @@ export type GetJobStatusJobsJobIdGetData = {
 
 export type GetJobStatusJobsJobIdGetResponse = (JobStatusResponse);
 
-export type GetScenarioScenariosSidGetData = {
-    sid: string;
-};
+export type GetScheduleScheduleGetResponse = (ScheduleInfo);
 
-export type GetScenarioScenariosSidGetResponse = (ScenarioInfo);
-
-export type GetScenarioAssignmentsScenariosSidAssignmentsGetData = {
+export type GetAssignmentsAssignmentsGetData = {
     /**
      * If set, only assignments for this agronomist are returned.
      */
@@ -179,47 +192,35 @@ export type GetScenarioAssignmentsScenariosSidAssignmentsGetData = {
      * If true, recompute with LLM+solver and overwrite the stored decision. Cached GET skips that when a row exists.
      */
     refresh?: boolean;
-    sid: string;
 };
 
-export type GetScenarioAssignmentsScenariosSidAssignmentsGetResponse = (unknown);
+export type GetAssignmentsAssignmentsGetResponse = (AssignmentsResult);
 
-export type PostAssignmentsJobScenariosSidAssignmentsJobsPostData = {
+export type PostAssignmentsJobAssignmentsJobsPostData = {
     /**
      * If set, result payload only includes this agronomist's assignments.
      */
     agronomistId?: (string | null);
     /**
-     * When true, runs full LLM+solver recompute like GET .../assignments?refresh=true.
+     * When true, runs full LLM+solver recompute like GET /assignments?refresh=true.
      */
     refresh?: boolean;
-    sid: string;
 };
 
-export type PostAssignmentsJobScenariosSidAssignmentsJobsPostResponse = (JobAcceptedResponse);
+export type PostAssignmentsJobAssignmentsJobsPostResponse = (JobAcceptedResponse);
 
-export type PostForceAssignScenariosSidForceAssignPostData = {
+export type PostForceAssignForceAssignPostData = {
     requestBody: ForceAssignRequest;
-    sid: string;
 };
 
-export type PostForceAssignScenariosSidForceAssignPostResponse = (unknown);
+export type PostForceAssignForceAssignPostResponse = (Decision);
 
-export type PostAddTaskScenariosSidAddTaskPostData = {
+export type PostAddTaskAddTaskPostData = {
     requestBody: AddTaskRequest;
-    sid: string;
 };
 
-export type PostAddTaskScenariosSidAddTaskPostResponse = (AddTaskResponse);
+export type PostAddTaskAddTaskPostResponse = (AddTaskResponse);
 
-export type PostReoptimizeScenariosSidReoptimizePostData = {
-    sid: string;
-};
+export type PostReoptimizeReoptimizePostResponse = (Decision);
 
-export type PostReoptimizeScenariosSidReoptimizePostResponse = (Decision);
-
-export type PostReoptimizeJobScenariosSidReoptimizeJobsPostData = {
-    sid: string;
-};
-
-export type PostReoptimizeJobScenariosSidReoptimizeJobsPostResponse = (JobAcceptedResponse);
+export type PostReoptimizeJobReoptimizeJobsPostResponse = (JobAcceptedResponse);

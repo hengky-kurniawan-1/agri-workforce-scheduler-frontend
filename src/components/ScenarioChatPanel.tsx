@@ -43,7 +43,7 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">
         {messages.length === 0 ? (
-          <p className="text-xs text-soil-500">Ask about the schedule or scenario…</p>
+          <p className="text-xs text-soil-500">Ask about the schedule…</p>
         ) : (
           messages.map((m, i) => (
             <div

@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScenarioScenariosSidGetData, GetScenarioScenariosSidGetResponse, GetScenarioAssignmentsScenariosSidAssignmentsGetData, GetScenarioAssignmentsScenariosSidAssignmentsGetResponse, PostAssignmentsJobScenariosSidAssignmentsJobsPostData, PostAssignmentsJobScenariosSidAssignmentsJobsPostResponse, PostForceAssignScenariosSidForceAssignPostData, PostForceAssignScenariosSidForceAssignPostResponse, PostAddTaskScenariosSidAddTaskPostData, PostAddTaskScenariosSidAddTaskPostResponse, PostReoptimizeScenariosSidReoptimizePostData, PostReoptimizeScenariosSidReoptimizePostResponse, PostReoptimizeJobScenariosSidReoptimizeJobsPostData, PostReoptimizeJobScenariosSidReoptimizeJobsPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse, PostReoptimizeReoptimizePostResponse, PostReoptimizeJobReoptimizeJobsPostResponse } from './types.gen';
 
 /**
  * Health
@@ -88,41 +88,29 @@ export const getJobStatusJobsJobIdGet = (data: GetJobStatusJobsJobIdGetData): Ca
 };
 
 /**
- * Get Scenario
- * @param data The data for the request.
- * @param data.sid
- * @returns ScenarioInfo Successful Response
+ * Get Schedule
+ * @returns ScheduleInfo Successful Response
  * @throws ApiError
  */
-export const getScenarioScenariosSidGet = (data: GetScenarioScenariosSidGetData): CancelablePromise<GetScenarioScenariosSidGetResponse> => {
+export const getScheduleScheduleGet = (): CancelablePromise<GetScheduleScheduleGetResponse> => {
     return __request(OpenAPI, {
         method: 'GET',
-        url: '/scenarios/{sid}',
-        path: {
-            sid: data.sid
-        },
-        errors: {
-            422: 'Validation Error'
-        }
+        url: '/schedule'
     });
 };
 
 /**
- * Get Scenario Assignments
+ * Get Assignments
  * @param data The data for the request.
- * @param data.sid
  * @param data.agronomistId If set, only assignments for this agronomist are returned.
  * @param data.refresh If true, recompute with LLM+solver and overwrite the stored decision. Cached GET skips that when a row exists.
- * @returns unknown Successful Response
+ * @returns AssignmentsResult Successful Response
  * @throws ApiError
  */
-export const getScenarioAssignmentsScenariosSidAssignmentsGet = (data: GetScenarioAssignmentsScenariosSidAssignmentsGetData): CancelablePromise<GetScenarioAssignmentsScenariosSidAssignmentsGetResponse> => {
+export const getAssignmentsAssignmentsGet = (data: GetAssignmentsAssignmentsGetData = {}): CancelablePromise<GetAssignmentsAssignmentsGetResponse> => {
     return __request(OpenAPI, {
         method: 'GET',
-        url: '/scenarios/{sid}/assignments',
-        path: {
-            sid: data.sid
-        },
+        url: '/assignments',
         query: {
             agronomist_id: data.agronomistId,
             refresh: data.refresh
@@ -136,19 +124,15 @@ export const getScenarioAssignmentsScenariosSidAssignmentsGet = (data: GetScenar
 /**
  * Post Assignments Job
  * @param data The data for the request.
- * @param data.sid
- * @param data.refresh When true, runs full LLM+solver recompute like GET .../assignments?refresh=true.
+ * @param data.refresh When true, runs full LLM+solver recompute like GET /assignments?refresh=true.
  * @param data.agronomistId If set, result payload only includes this agronomist's assignments.
  * @returns JobAcceptedResponse Successful Response
  * @throws ApiError
  */
-export const postAssignmentsJobScenariosSidAssignmentsJobsPost = (data: PostAssignmentsJobScenariosSidAssignmentsJobsPostData): CancelablePromise<PostAssignmentsJobScenariosSidAssignmentsJobsPostResponse> => {
+export const postAssignmentsJobAssignmentsJobsPost = (data: PostAssignmentsJobAssignmentsJobsPostData = {}): CancelablePromise<PostAssignmentsJobAssignmentsJobsPostResponse> => {
     return __request(OpenAPI, {
         method: 'POST',
-        url: '/scenarios/{sid}/assignments/jobs',
-        path: {
-            sid: data.sid
-        },
+        url: '/assignments/jobs',
         query: {
             refresh: data.refresh,
             agronomist_id: data.agronomistId
@@ -162,18 +146,14 @@ export const postAssignmentsJobScenariosSidAssignmentsJobsPost = (data: PostAssi
 /**
  * Post Force Assign
  * @param data The data for the request.
- * @param data.sid
  * @param data.requestBody
- * @returns unknown Successful Response
+ * @returns Decision Successful Response
  * @throws ApiError
  */
-export const postForceAssignScenariosSidForceAssignPost = (data: PostForceAssignScenariosSidForceAssignPostData): CancelablePromise<PostForceAssignScenariosSidForceAssignPostResponse> => {
+export const postForceAssignForceAssignPost = (data: PostForceAssignForceAssignPostData): CancelablePromise<PostForceAssignForceAssignPostResponse> => {
     return __request(OpenAPI, {
         method: 'POST',
-        url: '/scenarios/{sid}/force-assign',
-        path: {
-            sid: data.sid
-        },
+        url: '/force-assign',
         body: data.requestBody,
         mediaType: 'application/json',
         errors: {
@@ -186,18 +166,14 @@ export const postForceAssignScenariosSidForceAssignPost = (data: PostForceAssign
  * Post Add Task
  * Insert a new task with LNS (freeze prior schedule within a time neighborhood).
  * @param data The data for the request.
- * @param data.sid
  * @param data.requestBody
  * @returns AddTaskResponse Successful Response
  * @throws ApiError
  */
-export const postAddTaskScenariosSidAddTaskPost = (data: PostAddTaskScenariosSidAddTaskPostData): CancelablePromise<PostAddTaskScenariosSidAddTaskPostResponse> => {
+export const postAddTaskAddTaskPost = (data: PostAddTaskAddTaskPostData): CancelablePromise<PostAddTaskAddTaskPostResponse> => {
     return __request(OpenAPI, {
         method: 'POST',
-        url: '/scenarios/{sid}/add-task',
-        path: {
-            sid: data.sid
-        },
+        url: '/add-task',
         body: data.requestBody,
         mediaType: 'application/json',
         errors: {
@@ -208,41 +184,25 @@ export const postAddTaskScenariosSidAddTaskPost = (data: PostAddTaskScenariosSid
 
 /**
  * Post Reoptimize
- * Full LLM + CP-SAT re-solve on canonical tasks plus any extra tasks (nightly / manual).
- * @param data The data for the request.
- * @param data.sid
+ * Full LLM + CP-SAT re-solve on all tasks (nightly / manual).
  * @returns Decision Successful Response
  * @throws ApiError
  */
-export const postReoptimizeScenariosSidReoptimizePost = (data: PostReoptimizeScenariosSidReoptimizePostData): CancelablePromise<PostReoptimizeScenariosSidReoptimizePostResponse> => {
+export const postReoptimizeReoptimizePost = (): CancelablePromise<PostReoptimizeReoptimizePostResponse> => {
     return __request(OpenAPI, {
         method: 'POST',
-        url: '/scenarios/{sid}/reoptimize',
-        path: {
-            sid: data.sid
-        },
-        errors: {
-            422: 'Validation Error'
-        }
+        url: '/reoptimize'
     });
 };
 
 /**
  * Post Reoptimize Job
- * @param data The data for the request.
- * @param data.sid
  * @returns JobAcceptedResponse Successful Response
  * @throws ApiError
  */
-export const postReoptimizeJobScenariosSidReoptimizeJobsPost = (data: PostReoptimizeJobScenariosSidReoptimizeJobsPostData): CancelablePromise<PostReoptimizeJobScenariosSidReoptimizeJobsPostResponse> => {
+export const postReoptimizeJobReoptimizeJobsPost = (): CancelablePromise<PostReoptimizeJobReoptimizeJobsPostResponse> => {
     return __request(OpenAPI, {
         method: 'POST',
-        url: '/scenarios/{sid}/reoptimize/jobs',
-        path: {
-            sid: data.sid
-        },
-        errors: {
-            422: 'Validation Error'
-        }
+        url: '/reoptimize/jobs'
     });
 };

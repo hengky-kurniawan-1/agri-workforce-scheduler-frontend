@@ -2,10 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import type { AxiosError } from 'axios';
 import { ApiError } from './generated/core/ApiError';
 import {
-  getScenarioAssignmentsScenariosSidAssignmentsGet,
-  getScenarioScenariosSidGet,
+  getAssignmentsAssignmentsGet,
+  getScheduleScheduleGet,
   postChatChatPost,
-  postForceAssignScenariosSidForceAssignPost,
+  postForceAssignForceAssignPost,
 } from './generated';
 import type {
   AssignmentsResult,
@@ -13,7 +13,7 @@ import type {
   ChatResponse,
   ChatUiFlags,
   ForceAssignRequest,
-  ScenarioInfo,
+  ScheduleInfo,
 } from './generated';
 
 type AsyncState<T> = {
@@ -47,24 +47,16 @@ function getErrorMessage(err: unknown): string {
   return 'Unknown error';
 }
 
-export function useScenario(
-  sid: string | null
-): AsyncState<ScenarioInfo> & { refetch: () => Promise<void> } {
-  const [data, setData] = useState<ScenarioInfo | null>(null);
+export function useSchedule(): AsyncState<ScheduleInfo> & { refetch: () => Promise<void> } {
+  const [data, setData] = useState<ScheduleInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    if (!sid) {
-      setData(null);
-      setError(null);
-      setLoading(false);
-      return;
-    }
     setLoading(true);
     setError(null);
     try {
-      const res = await getScenarioScenariosSidGet({ sid });
+      const res = await getScheduleScheduleGet();
       setData(res);
     } catch (e) {
       setError(getErrorMessage(e));
@@ -72,7 +64,7 @@ export function useScenario(
     } finally {
       setLoading(false);
     }
-  }, [sid]);
+  }, []);
 
   useEffect(() => {
     void load();
@@ -81,39 +73,29 @@ export function useScenario(
   return { data, loading, error, refetch: load };
 }
 
-export function useAssignments(
-  sid: string | null
-): AsyncState<AssignmentsResult> & { refetch: (opts?: { refresh?: boolean }) => Promise<void> } {
+export function useAssignments(): AsyncState<AssignmentsResult> & {
+  refetch: (opts?: { refresh?: boolean }) => Promise<void>;
+} {
   const [data, setData] = useState<AssignmentsResult | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const load = useCallback(
-    async (opts?: { refresh?: boolean }) => {
-      if (!sid) {
-        setData(null);
-        setError(null);
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      setError(null);
-      try {
-        const res = await getScenarioAssignmentsScenariosSidAssignmentsGet({
-          sid,
-          refresh: opts?.refresh ?? false,
-          agronomistId: undefined,
-        });
-        setData(res);
-      } catch (e) {
-        setError(getErrorMessage(e));
-        setData(null);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [sid]
-  );
+  const load = useCallback(async (opts?: { refresh?: boolean }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await getAssignmentsAssignmentsGet({
+        refresh: opts?.refresh ?? false,
+        agronomistId: undefined,
+      });
+      setData(res);
+    } catch (e) {
+      setError(getErrorMessage(e));
+      setData(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     void load({ refresh: false });
@@ -122,38 +104,30 @@ export function useAssignments(
   return { data, loading, error, refetch: load };
 }
 
-export function useForceAssign(sid: string | null) {
+export function useForceAssign() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const mutate = useCallback(
-    async (body: ForceAssignRequest) => {
-      if (!sid) {
-        const msg = 'No scenario selected';
-        setError(msg);
-        throw new Error(msg);
-      }
-      setSubmitting(true);
-      setError(null);
-      try {
-        await postForceAssignScenariosSidForceAssignPost({ sid, requestBody: body });
-      } catch (e) {
-        setError(getErrorMessage(e));
-        throw e;
-      } finally {
-        setSubmitting(false);
-      }
-    },
-    [sid]
-  );
+  const mutate = useCallback(async (body: ForceAssignRequest) => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await postForceAssignForceAssignPost({ requestBody: body });
+    } catch (e) {
+      setError(getErrorMessage(e));
+      throw e;
+    } finally {
+      setSubmitting(false);
+    }
+  }, []);
 
   return { mutate, submitting, error };
 }
 
 type UseChatOpts = {
   /**
-   * Called when the server sets `flags.map_updated` or `flags.schedule_updated`
-   * (assignments or schedule changed; refetch to refresh the map).
+   * Called when the server sets `flags.map_updated`, `flags.schedule_updated`, or
+   * `flags.roster_updated` (schedule or assignments changed; refetch to refresh the UI).
    */
   onChatFlags?: (flags: ChatUiFlags) => void;
 };
@@ -170,7 +144,10 @@ export function useChat(opts?: UseChatOpts) {
       try {
         const res = await postChatChatPost({ requestBody: { messages } });
         const flags = res.flags;
-        if (flags && (flags.map_updated || flags.schedule_updated)) {
+        if (
+          flags &&
+          (flags.map_updated || flags.schedule_updated || flags.roster_updated)
+        ) {
           onChatFlags?.(flags);
         }
         return res;

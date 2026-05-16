@@ -1,35 +1,30 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
-import { useAssignments, useScenario } from '@/api/hooks';
-import type { AssignmentsResult, ScenarioInfo } from '@/api/generated';
+import { useAssignments, useSchedule } from '@/api/hooks';
+import type { AssignmentsResult, ScheduleInfo } from '@/api/generated';
 import type { Agronomist, Assignment, Field, HybridStep, Task } from '@/api/generated/types.gen';
 import {
-  SCENARIO_IDS,
-  resolvedScenarioId,
-  resolvedTaskId,
-  scenarioSearchParamNeedsReplace,
   TASK_QUERY_KEY,
-  urlSearchParamsWithScenario,
+  resolvedTaskId,
   urlSearchParamsWithTask,
-} from '@/lib/scenarioQuery';
+} from '@/lib/urlQuery';
 
 export type OperationsOutletContext = {
-  sid: string;
   searchParams: URLSearchParams;
   setSearchParams: ReturnType<typeof useSearchParams>[1];
-  scenario: ScenarioInfo | null;
+  schedule: ScheduleInfo | null;
   assignmentsResult: AssignmentsResult | null;
   tasks: Task[];
   fields: Field[];
   assignments: Assignment[];
   agronomists: Agronomist[];
   hybridSteps: HybridStep[];
-  scenarioLoading: boolean;
+  scheduleLoading: boolean;
   assignmentsLoading: boolean;
   loading: boolean;
   error: string | null;
   refetchAssignments: ReturnType<typeof useAssignments>['refetch'];
-  refetchScenario: ReturnType<typeof useScenario>['refetch'];
+  refetchSchedule: ReturnType<typeof useSchedule>['refetch'];
   selectedTaskId: string | null;
   setSelectedTaskId: (taskId: string) => void;
 };
@@ -40,30 +35,24 @@ export function useOperationsOutlet(): OperationsOutletContext {
 
 export function OperationsLayout() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const sid = resolvedScenarioId(searchParams);
-
-  useEffect(() => {
-    if (!scenarioSearchParamNeedsReplace(searchParams)) return;
-    setSearchParams(urlSearchParamsWithScenario(searchParams, '1'), { replace: true });
-  }, [searchParams, setSearchParams]);
 
   const {
-    data: scenario,
-    loading: scenarioLoading,
-    error: scenarioError,
-    refetch: refetchScenario,
-  } = useScenario(sid);
+    data: schedule,
+    loading: scheduleLoading,
+    error: scheduleError,
+    refetch: refetchSchedule,
+  } = useSchedule();
   const {
     data: assignmentsResult,
     loading: assignmentsLoading,
     error: assignmentsError,
     refetch: refetchAssignments,
-  } = useAssignments(sid);
+  } = useAssignments();
 
-  const tasks = scenario?.tasks ?? [];
-  const fields = scenario?.fields ?? [];
+  const tasks = schedule?.tasks ?? [];
+  const fields = schedule?.fields ?? [];
   const assignments = assignmentsResult?.assignments ?? [];
-  const agronomists = scenario?.agronomists ?? [];
+  const agronomists = schedule?.agronomists ?? [];
   const hybridSteps = assignmentsResult?.hybrid_steps ?? [];
 
   useEffect(() => {
@@ -91,47 +80,45 @@ export function OperationsLayout() {
     [searchParams, setSearchParams]
   );
 
-  const loading = scenarioLoading || assignmentsLoading;
-  const error = scenarioError ?? assignmentsError;
+  const loading = scheduleLoading || assignmentsLoading;
+  const error = scheduleError ?? assignmentsError;
 
   const outletContext = useMemo(
     (): OperationsOutletContext => ({
-      sid,
       searchParams,
       setSearchParams,
-      scenario,
+      schedule,
       assignmentsResult,
       tasks,
       fields,
       assignments,
       agronomists,
       hybridSteps,
-      scenarioLoading,
+      scheduleLoading,
       assignmentsLoading,
       loading,
       error,
       refetchAssignments,
-      refetchScenario,
+      refetchSchedule,
       selectedTaskId,
       setSelectedTaskId,
     }),
     [
-      sid,
       searchParams,
       setSearchParams,
-      scenario,
+      schedule,
       assignmentsResult,
       tasks,
       fields,
       assignments,
       agronomists,
       hybridSteps,
-      scenarioLoading,
+      scheduleLoading,
       assignmentsLoading,
       loading,
       error,
       refetchAssignments,
-      refetchScenario,
+      refetchSchedule,
       selectedTaskId,
       setSelectedTaskId,
     ]
@@ -142,37 +129,16 @@ export function OperationsLayout() {
       <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-soil-200/80 pb-4">
         <div className="min-w-0">
           <h1 className="truncate text-lg font-semibold tracking-tight text-soil-900">Operations</h1>
-          <p className="mt-0.5 text-xs text-soil-500">Scenario, schedule, and assistant</p>
+          <p className="mt-0.5 text-xs text-soil-500">Schedule and assistant</p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-medium text-soil-500">Scenario</span>
-          <div className="flex gap-1">
-            {SCENARIO_IDS.map((id) => (
-              <button
-                key={id}
-                type="button"
-                onClick={() =>
-                  setSearchParams(urlSearchParamsWithScenario(searchParams, id), { replace: true })
-                }
-                className={`rounded-lg px-3 py-1.5 text-xs font-medium transition ${
-                  sid === id
-                    ? 'bg-soil-900 text-white'
-                    : 'border border-soil-200 bg-white text-soil-700 hover:border-soil-300'
-                }`}
-              >
-                {id}
-              </button>
-            ))}
-          </div>
-          <button
-            type="button"
-            onClick={() => void refetchAssignments({ refresh: true })}
-            disabled={assignmentsLoading}
-            className="rounded-lg border border-soil-200 bg-white px-3 py-1.5 text-xs font-medium text-soil-800 hover:bg-soil-50 disabled:opacity-50"
-          >
-            Recompute
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => void refetchAssignments({ refresh: true })}
+          disabled={assignmentsLoading}
+          className="rounded-lg border border-soil-200 bg-white px-3 py-1.5 text-xs font-medium text-soil-800 hover:bg-soil-50 disabled:opacity-50"
+        >
+          Recompute
+        </button>
       </header>
 
       <Outlet context={outletContext} />

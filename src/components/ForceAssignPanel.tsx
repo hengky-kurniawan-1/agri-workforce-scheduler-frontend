@@ -3,14 +3,13 @@ import type { Agronomist } from '@/api/generated';
 import { useForceAssign } from '@/api/hooks';
 
 type Props = {
-  sid: string;
   agronomists: Agronomist[];
   selectedTaskId: string | null;
   onSuccess: () => void;
 };
 
-export function ForceAssignPanel({ sid, agronomists, selectedTaskId, onSuccess }: Props) {
-  const { mutate, submitting, error } = useForceAssign(sid);
+export function ForceAssignPanel({ agronomists, selectedTaskId, onSuccess }: Props) {
+  const { mutate, submitting, error } = useForceAssign();
   const [agronomistId, setAgronomistId] = useState('');
 
   async function handleSubmit(e: FormEvent) {
@@ -30,7 +29,7 @@ export function ForceAssignPanel({ sid, agronomists, selectedTaskId, onSuccess }
       <h3 className="text-sm font-semibold text-soil-900">Force assign</h3>
       <p className="mt-1 text-[11px] text-soil-500">
         Override solver for the selected task ·{' '}
-        <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">POST /scenarios/{sid}/force-assign</code>
+        <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">POST /force-assign</code>
       </p>
       <form className="mt-3 flex flex-col gap-2" onSubmit={(e) => void handleSubmit(e)}>
         <label className="flex min-w-0 flex-col gap-1 text-xs">

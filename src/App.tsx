@@ -2,7 +2,6 @@ import { BrowserRouter, Link, NavLink, Route, Routes } from 'react-router-dom';
 import { Dashboard } from '@/components/Dashboard';
 import { FieldsPage } from '@/pages/FieldsPage';
 import { OperationsLayout } from '@/pages/OperationsLayout';
-import { ScenariosPage } from '@/pages/ScenariosPage';
 import { TasksPage } from '@/pages/TasksPage';
 
 const navClass = ({ isActive }: { isActive: boolean }) =>
@@ -30,9 +29,6 @@ export function App() {
               <NavLink to="/tasks" className={navClass}>
                 Tasks
               </NavLink>
-              <NavLink to="/scenarios" className={navClass}>
-                Scenarios
-              </NavLink>
             </nav>
           </div>
         </header>
@@ -43,7 +39,6 @@ export function App() {
               <Route path="/fields" element={<FieldsPage />} />
               <Route path="/tasks" element={<TasksPage />} />
             </Route>
-            <Route path="/scenarios" element={<ScenariosPage />} />
           </Routes>
         </main>
       </div>
