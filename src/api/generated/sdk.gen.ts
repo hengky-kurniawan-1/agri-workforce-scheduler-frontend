@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse, PostReoptimizeReoptimizePostResponse, PostReoptimizeJobReoptimizeJobsPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse } from './types.gen';
 
 /**
  * Health
@@ -191,30 +191,5 @@ export const postAddTaskAddTaskPost = (data: PostAddTaskAddTaskPostData): Cancel
         errors: {
             422: 'Validation Error'
         }
-    });
-};
-
-/**
- * Post Reoptimize
- * Full LLM + CP-SAT re-solve on all tasks (nightly / manual).
- * @returns Decision Successful Response
- * @throws ApiError
- */
-export const postReoptimizeReoptimizePost = (): CancelablePromise<PostReoptimizeReoptimizePostResponse> => {
-    return __request(OpenAPI, {
-        method: 'POST',
-        url: '/reoptimize'
-    });
-};
-
-/**
- * Post Reoptimize Job
- * @returns JobAcceptedResponse Successful Response
- * @throws ApiError
- */
-export const postReoptimizeJobReoptimizeJobsPost = (): CancelablePromise<PostReoptimizeJobReoptimizeJobsPostResponse> => {
-    return __request(OpenAPI, {
-        method: 'POST',
-        url: '/reoptimize/jobs'
     });
 };

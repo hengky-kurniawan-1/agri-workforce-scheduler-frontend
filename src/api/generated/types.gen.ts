@@ -120,7 +120,7 @@ export type JobAcceptedResponse = {
 
 export type JobStatusResponse = {
     job_id: string;
-    kind: 'chat' | 'reoptimize' | 'assignments';
+    kind: 'chat' | 'assignments';
     status: 'pending' | 'running' | 'completed' | 'failed';
     result?: ({
     [key: string]: unknown;
@@ -128,7 +128,7 @@ export type JobStatusResponse = {
     error?: (string | null);
 };
 
-export type kind = 'chat' | 'reoptimize' | 'assignments';
+export type kind = 'chat' | 'assignments';
 
 export type status = 'pending' | 'running' | 'completed' | 'failed';
 
@@ -231,7 +231,3 @@ export type PostAddTaskAddTaskPostData = {
 };
 
 export type PostAddTaskAddTaskPostResponse = (AddTaskResponse);
-
-export type PostReoptimizeReoptimizePostResponse = (Decision);
-
-export type PostReoptimizeJobReoptimizeJobsPostResponse = (JobAcceptedResponse);
