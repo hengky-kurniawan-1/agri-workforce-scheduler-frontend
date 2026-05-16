@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { AgronomistRoutePlan } from '@/lib/routeGeometry';
+import { getCachedDrivingRoute } from '@/lib/osrmCache';
 import { fetchDrivingRoute } from '@/lib/osrm';
 
 export type OsrmRouteStatus = 'idle' | 'loading' | 'ok' | 'fallback';
@@ -24,14 +25,25 @@ export function useOsrmRoutes(routes: AgronomistRoutePlan[]): {
       return;
     }
 
-    const controller = new AbortController();
-    const { signal } = controller;
-
     const initial = new Map<string, OsrmRouteResult>();
+    const toFetch: AgronomistRoutePlan[] = [];
+
     for (const r of routable) {
-      initial.set(r.agronomistId, { status: 'loading' });
+      const stops = r.stops.map((s) => ({ lat: s.lat, lng: s.lng }));
+      const cached = getCachedDrivingRoute(stops);
+      if (cached) {
+        initial.set(r.agronomistId, { roadPositions: cached, status: 'ok' });
+      } else {
+        initial.set(r.agronomistId, { status: 'loading' });
+        toFetch.push(r);
+      }
     }
     setByAgronomistId(initial);
+
+    if (toFetch.length === 0) return;
+
+    const controller = new AbortController();
+    const { signal } = controller;
 
     let cancelled = false;
 
@@ -50,14 +62,14 @@ export function useOsrmRoutes(routes: AgronomistRoutePlan[]): {
     }
 
     async function run() {
-      const next = new Map<string, OsrmRouteResult>();
+      const next = new Map(initial);
       let index = 0;
 
       async function worker() {
-        while (index < routable.length) {
+        while (index < toFetch.length) {
           if (signal.aborted) return;
           const i = index++;
-          const route = routable[i];
+          const route = toFetch[i];
           if (!route) continue;
           const result = await fetchOne(route);
           if (!signal.aborted) {
@@ -66,7 +78,7 @@ export function useOsrmRoutes(routes: AgronomistRoutePlan[]): {
         }
       }
 
-      const workers = Array.from({ length: Math.min(MAX_CONCURRENT, routable.length) }, () =>
+      const workers = Array.from({ length: Math.min(MAX_CONCURRENT, toFetch.length) }, () =>
         worker()
       );
 

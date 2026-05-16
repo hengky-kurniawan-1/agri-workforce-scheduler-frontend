@@ -1,3 +1,5 @@
+import { getCachedDrivingRoute, setCachedDrivingRoute } from '@/lib/osrmCache';
+
 const DEFAULT_OSRM_URL = 'https://router.project-osrm.org';
 
 type LatLng = { lat: number; lng: number };
@@ -26,6 +28,9 @@ export async function fetchDrivingRoute(
 ): Promise<[number, number][] | null> {
   if (stops.length < 2) return null;
 
+  const cached = getCachedDrivingRoute(stops);
+  if (cached) return cached;
+
   const coords = stops.map((s) => `${s.lng},${s.lat}`).join(';');
   const url = `${osrmBaseUrl()}/route/v1/driving/${coords}?overview=full&geometries=geojson`;
 
@@ -49,5 +54,7 @@ export async function fetchDrivingRoute(
   const coordinates = data.routes?.[0]?.geometry?.coordinates;
   if (!coordinates?.length) return null;
 
-  return coordinates.map(([lng, lat]) => [lat, lng] as [number, number]);
+  const positions = coordinates.map(([lng, lat]) => [lat, lng] as [number, number]);
+  setCachedDrivingRoute(stops, positions);
+  return positions;
 }
