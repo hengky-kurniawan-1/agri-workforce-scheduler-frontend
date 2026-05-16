@@ -7,7 +7,14 @@ import {
   postChatChatPost,
   postForceAssignScenariosSidForceAssignPost,
 } from './generated';
-import type { AssignmentsResult, ChatMessage, ChatResponse, ForceAssignRequest, ScenarioInfo } from './generated';
+import type {
+  AssignmentsResult,
+  ChatMessage,
+  ChatResponse,
+  ChatUiFlags,
+  ForceAssignRequest,
+  ScenarioInfo,
+} from './generated';
 
 type AsyncState<T> = {
   data: T | null;
@@ -144,12 +151,15 @@ export function useForceAssign(sid: string | null) {
 }
 
 type UseChatOpts = {
-  /** Called when the server sets `flags.map_updated` (assignments changed; refetch to refresh the map). */
-  onMapUpdated?: () => void;
+  /**
+   * Called when the server sets `flags.map_updated` or `flags.schedule_updated`
+   * (assignments or schedule changed; refetch to refresh the map).
+   */
+  onChatFlags?: (flags: ChatUiFlags) => void;
 };
 
 export function useChat(opts?: UseChatOpts) {
-  const onMapUpdated = opts?.onMapUpdated;
+  const onChatFlags = opts?.onChatFlags;
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -159,8 +169,9 @@ export function useChat(opts?: UseChatOpts) {
       setError(null);
       try {
         const res = await postChatChatPost({ requestBody: { messages } });
-        if (res.flags?.map_updated) {
-          onMapUpdated?.();
+        const flags = res.flags;
+        if (flags && (flags.map_updated || flags.schedule_updated)) {
+          onChatFlags?.(flags);
         }
         return res;
       } catch (e) {
@@ -170,7 +181,7 @@ export function useChat(opts?: UseChatOpts) {
         setSubmitting(false);
       }
     },
-    [onMapUpdated]
+    [onChatFlags]
   );
 
   return { send, submitting, error };

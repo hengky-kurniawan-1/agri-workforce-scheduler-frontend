@@ -1,14 +1,14 @@
 import { useState, type FormEvent } from 'react';
-import type { ChatMessage } from '@/api/generated';
+import type { ChatMessage, ChatUiFlags } from '@/api/generated';
 import { useChat } from '@/api/hooks';
 
 type Props = {
-  onMapUpdated?: () => void;
+  onChatFlags?: (flags: ChatUiFlags) => void;
   className?: string;
 };
 
-export function ScenarioChatPanel({ onMapUpdated, className }: Props) {
-  const { send, submitting, error } = useChat({ onMapUpdated });
+export function ScenarioChatPanel({ onChatFlags, className }: Props) {
+  const { send, submitting, error } = useChat({ onChatFlags });
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState('');
 
@@ -36,7 +36,9 @@ export function ScenarioChatPanel({ onMapUpdated, className }: Props) {
       <p className="mt-1 shrink-0 text-[11px] leading-snug text-soil-400">
         <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">/chat</code>
         {` · `}
-        Reloads assignments when <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">map_updated</code>
+        Reloads assignments when{' '}
+        <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">map_updated</code> or{' '}
+        <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
       </p>
 
       <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">

@@ -29,6 +29,7 @@ export type OperationsOutletContext = {
   loading: boolean;
   error: string | null;
   refetchAssignments: ReturnType<typeof useAssignments>['refetch'];
+  refetchScenario: ReturnType<typeof useScenario>['refetch'];
   selectedTaskId: string | null;
   setSelectedTaskId: (taskId: string) => void;
 };
@@ -46,7 +47,12 @@ export function OperationsLayout() {
     setSearchParams(urlSearchParamsWithScenario(searchParams, '1'), { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const { data: scenario, loading: scenarioLoading, error: scenarioError } = useScenario(sid);
+  const {
+    data: scenario,
+    loading: scenarioLoading,
+    error: scenarioError,
+    refetch: refetchScenario,
+  } = useScenario(sid);
   const {
     data: assignmentsResult,
     loading: assignmentsLoading,
@@ -105,6 +111,7 @@ export function OperationsLayout() {
       loading,
       error,
       refetchAssignments,
+      refetchScenario,
       selectedTaskId,
       setSelectedTaskId,
     }),
@@ -124,6 +131,7 @@ export function OperationsLayout() {
       loading,
       error,
       refetchAssignments,
+      refetchScenario,
       selectedTaskId,
       setSelectedTaskId,
     ]

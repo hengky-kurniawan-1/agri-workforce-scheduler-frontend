@@ -1,4 +1,5 @@
 import { useCallback, useMemo } from 'react';
+import type { ChatUiFlags } from '@/api/generated';
 import { buildAgronomistRoutes } from '@/lib/routeGeometry';
 import { useOperationsOutlet } from '@/pages/OperationsLayout';
 import { AgronomistRouteList } from './AgronomistRouteList';
@@ -15,6 +16,7 @@ export function Dashboard() {
     agronomists,
     scenarioLoading,
     refetchAssignments,
+    refetchScenario,
   } = useOperationsOutlet();
 
   const routeMapKey = useMemo(
@@ -31,9 +33,15 @@ export function Dashboard() {
     [agronomists, tasks, fields, assignments]
   );
 
-  const onChatMapUpdated = useCallback(() => {
-    void refetchAssignments({ refresh: false });
-  }, [refetchAssignments]);
+  const onChatFlags = useCallback(
+    (flags: ChatUiFlags) => {
+      if (flags.schedule_updated) void refetchScenario();
+      if (flags.map_updated || flags.schedule_updated) {
+        void refetchAssignments({ refresh: false });
+      }
+    },
+    [refetchScenario, refetchAssignments]
+  );
 
   const hasFields = fields.length > 0;
 
@@ -68,7 +76,7 @@ export function Dashboard() {
       </section>
 
       <aside className="flex max-xl:order-3 min-h-0 flex-col max-xl:min-h-[min(22rem,45vh)] xl:col-start-3 xl:row-start-1 xl:h-full">
-        <ScenarioChatPanel onMapUpdated={onChatMapUpdated} className="min-h-0 flex-1" />
+        <ScenarioChatPanel onChatFlags={onChatFlags} className="min-h-0 flex-1" />
       </aside>
     </div>
   );
