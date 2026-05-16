@@ -51,7 +51,9 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
     >
       <div className="shrink-0 border-b border-soil-100 px-4 py-3">
         <h2 className="text-sm font-semibold text-soil-900">Map</h2>
-        <p className="mt-0.5 text-xs text-soil-500">Straight-line paths between field centroids · one color per agronomist</p>
+        <p className="mt-0.5 text-xs text-soil-500">
+          Straight-line paths between field centroids · toggle routes in the sidebar
+        </p>
       </div>
       <div className="min-h-[420px] flex-1 overflow-hidden p-3 xl:min-h-0">
         <div className="h-full w-full overflow-hidden rounded-md border border-soil-100">

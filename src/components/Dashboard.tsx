@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { ChatUiFlags } from '@/api/generated';
 import { buildAgronomistRoutes } from '@/lib/routeGeometry';
 import { useOperationsOutlet } from '@/pages/OperationsLayout';
@@ -33,6 +33,60 @@ export function Dashboard() {
     [agronomists, tasks, fields, assignments]
   );
 
+  const [visibleAgronomistIds, setVisibleAgronomistIds] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    const allIds = routes.map((r) => r.agronomistId);
+    const idSet = new Set(allIds);
+
+    setVisibleAgronomistIds((prev) => {
+      const routeKey = [...idSet].sort().join(',');
+      const prevKey = [...prev].sort().join(',');
+
+      if (prev.size === 0) {
+        return idSet.size > 0 ? new Set(allIds) : prev;
+      }
+
+      if (prevKey !== routeKey) {
+        const overlap = [...prev].some((id) => idSet.has(id));
+        if (!overlap) return new Set(allIds);
+
+        const next = new Set([...prev].filter((id) => idSet.has(id)));
+        for (const id of allIds) {
+          if (!prev.has(id)) next.add(id);
+        }
+        return next;
+      }
+
+      return new Set([...prev].filter((id) => idSet.has(id)));
+    });
+  }, [routes]);
+
+  const visibleRoutes = useMemo(
+    () => routes.filter((r) => visibleAgronomistIds.has(r.agronomistId)),
+    [routes, visibleAgronomistIds]
+  );
+
+  const onToggleAgronomist = useCallback((id: string) => {
+    setVisibleAgronomistIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const onSetAllVisible = useCallback(
+    (visible: boolean) => {
+      if (visible) {
+        setVisibleAgronomistIds(new Set(routes.map((r) => r.agronomistId)));
+      } else {
+        setVisibleAgronomistIds(new Set());
+      }
+    },
+    [routes]
+  );
+
   const onChatFlags = useCallback(
     (flags: ChatUiFlags) => {
       if (flags.schedule_updated) void refetchScenario();
@@ -48,7 +102,12 @@ export function Dashboard() {
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-4 max-xl:flex-col xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(260px,22vw)_1fr_minmax(280px,24vw)] xl:gap-5">
       <aside className="max-xl:order-2 flex min-h-0 flex-col gap-4 overflow-y-auto xl:col-start-1 xl:row-start-1 xl:h-full xl:max-h-full">
-        <AgronomistRouteList routes={routes} />
+        <AgronomistRouteList
+          routes={routes}
+          visibleIds={visibleAgronomistIds}
+          onToggleAgronomist={onToggleAgronomist}
+          onSetAllVisible={onSetAllVisible}
+        />
       </aside>
 
       <section
@@ -60,7 +119,7 @@ export function Dashboard() {
             fields={fields}
             tasks={tasks}
             assignments={assignments}
-            routes={routes}
+            routes={visibleRoutes}
             mapKey={routeMapKey}
           />
         ) : scenario && !scenarioLoading ? (
