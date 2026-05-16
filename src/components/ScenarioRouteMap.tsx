@@ -6,6 +6,8 @@ import type { Assignment, Field, Task } from '@/api/generated/types.gen';
 import { useOsrmRoutes } from '@/hooks/useOsrmRoutes';
 import type { AgronomistRoutePlan } from '@/lib/routeGeometry';
 
+const MAP_TILE_OPACITY = 0.45;
+
 type Props = {
   fields: Field[];
   tasks: Task[];
@@ -73,6 +75,7 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
         <div className="h-full w-full overflow-hidden rounded-md border border-soil-100">
           <MapContainer key={mapKey} center={center} zoom={13} className="h-full w-full" scrollWheelZoom>
             <TileLayer
+              opacity={MAP_TILE_OPACITY}
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
