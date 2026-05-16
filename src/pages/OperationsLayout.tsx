@@ -126,20 +126,6 @@ export function OperationsLayout() {
 
   return (
     <div className="mx-auto flex w-full max-w-[1920px] min-h-0 flex-1 flex-col px-4 py-4 sm:px-6 lg:px-6 xl:min-h-[calc(100vh-9.5rem)] xl:px-8">
-      <header className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-soil-200/80 pb-4">
-        <div className="min-w-0">
-          <h1 className="truncate text-lg font-semibold tracking-tight text-soil-900">Operations</h1>
-          <p className="mt-0.5 text-xs text-soil-500">Schedule and assistant</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => void refetchAssignments({ refresh: true })}
-          disabled={assignmentsLoading}
-          className="rounded-lg border border-soil-200 bg-white px-3 py-1.5 text-xs font-medium text-soil-800 hover:bg-soil-50 disabled:opacity-50"
-        >
-          Recompute
-        </button>
-      </header>
 
       <Outlet context={outletContext} />
     </div>
