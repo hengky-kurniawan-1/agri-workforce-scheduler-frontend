@@ -1,19 +1,19 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-      {
-          "name": "Launch Next.js Dev Server",
-          "type": "node",
-          "request": "launch",
-          "cwd": "${workspaceFolder}",
-          "env": {
-              "NODE_ENV": "development"
-          },
-          "console": "integratedTerminal",
-          "internalConsoleOptions": "neverOpen",
-          "restart": true,
-          "runtimeExecutable": "pnpm",
-          "runtimeArgs": ["run", "dev"]
-      }
-  ]
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "Launch Next.js Dev Server",
+			"type": "node",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"env": {
+				"NODE_ENV": "development"
+			},
+			"console": "integratedTerminal",
+			"internalConsoleOptions": "neverOpen",
+			"restart": true,
+			"runtimeExecutable": "pnpm",
+			"runtimeArgs": ["run", "dev"]
+		}
+	]
 }

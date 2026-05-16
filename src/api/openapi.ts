@@ -6,11 +6,11 @@ import { OpenAPI } from './generated/core/OpenAPI';
  * without browser CORS. Production builds use the configured API origin.
  */
 export function configureOpenAPI(): void {
-  if (import.meta.env.DEV) {
-    OpenAPI.BASE = '';
-    return;
-  }
-  const raw = import.meta.env.VITE_API_URL;
-  const trimmed = typeof raw === 'string' ? raw.replace(/\/$/, '') : '';
-  OpenAPI.BASE = trimmed || 'http://localhost:8000';
+	if (import.meta.env.DEV) {
+		OpenAPI.BASE = '';
+		return;
+	}
+	const raw = import.meta.env.VITE_API_URL;
+	const trimmed = typeof raw === 'string' ? raw.replace(/\/$/, '') : '';
+	OpenAPI.BASE = trimmed || 'http://localhost:8000';
 }

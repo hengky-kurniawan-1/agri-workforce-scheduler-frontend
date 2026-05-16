@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 @layer base {
-  html {
-    @apply antialiased;
-  }
-  body {
-    @apply min-h-screen bg-soil-50 text-soil-900;
-    background-image:
-      radial-gradient(ellipse 120% 80% at 50% -20%, rgba(69, 153, 92, 0.12), transparent),
-      linear-gradient(180deg, rgba(250, 248, 245, 1) 0%, rgba(240, 235, 227, 0.6) 100%);
-  }
+	html {
+		@apply antialiased;
+	}
+	body {
+		@apply min-h-screen bg-soil-50 text-soil-900;
+		background-image:
+			radial-gradient(ellipse 120% 80% at 50% -20%, rgba(69, 153, 92, 0.12), transparent),
+			linear-gradient(180deg, rgba(250, 248, 245, 1) 0%, rgba(240, 235, 227, 0.6) 100%);
+	}
 }

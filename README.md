@@ -54,7 +54,9 @@ If export names change, update [`src/api/hooks.ts`](src/api/hooks.ts) to match `
 | `npm run dev` | Vite dev server |
 | `npm run build` | Typecheck + production build |
 | `npm run preview` | Preview production build |
-| `npm run format` | Prettier |
+| `npm run format` | Biome format |
+| `npm run lint` | Biome lint |
+| `npm run check` | Biome format + lint (with safe fixes) |
 | `npm run generate-api` | Regenerate `src/api/generated` from OpenAPI |
 
 ## Roadmap / TODO
