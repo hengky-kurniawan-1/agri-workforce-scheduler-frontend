@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse, PostReoptimizeReoptimizePostResponse, PostReoptimizeJobReoptimizeJobsPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse, PostReoptimizeReoptimizePostResponse, PostReoptimizeJobReoptimizeJobsPostResponse } from './types.gen';
 
 /**
  * Health
@@ -26,6 +26,18 @@ export const getFieldsFieldsGet = (): CancelablePromise<GetFieldsFieldsGetRespon
     return __request(OpenAPI, {
         method: 'GET',
         url: '/fields'
+    });
+};
+
+/**
+ * Get Agronomists
+ * @returns Agronomist Successful Response
+ * @throws ApiError
+ */
+export const getAgronomistsAgronomistsGet = (): CancelablePromise<GetAgronomistsAgronomistsGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/agronomists'
     });
 };
 
