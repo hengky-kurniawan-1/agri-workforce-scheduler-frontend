@@ -135,7 +135,7 @@ export function Dashboard() {
         )}
       </section>
 
-      <aside className="flex max-xl:order-3 min-h-0 flex-col max-xl:min-h-[min(22rem,45vh)] xl:col-start-3 xl:row-start-1 xl:h-full">
+      <aside className="flex max-xl:order-3 min-h-0 flex-col overflow-hidden max-xl:min-h-[min(22rem,45vh)] max-xl:max-h-[min(22rem,45vh)] xl:col-start-3 xl:row-start-1 xl:h-full">
         <ScenarioChatPanel onChatFlags={onChatFlags} className="min-h-0 flex-1" />
       </aside>
     </div>

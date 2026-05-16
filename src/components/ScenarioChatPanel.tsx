@@ -30,7 +30,7 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 
   return (
     <section
-      className={`flex min-h-0 flex-col rounded-lg border border-soil-200 bg-white p-4 ${className ?? ''}`}
+      className={`flex min-h-0 flex-col overflow-hidden rounded-lg border border-soil-200 bg-white p-4 ${className ?? ''}`}
     >
       <h2 className="shrink-0 text-sm font-semibold text-soil-900">Assistant</h2>
       <p className="mt-1 shrink-0 text-[11px] leading-snug text-soil-400">
@@ -41,7 +41,7 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
         <code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
       </p>
 
-      <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">
+      <div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">
         {messages.length === 0 ? (
           <p className="text-xs text-soil-500">Ask about the schedule…</p>
         ) : (
@@ -60,7 +60,7 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
       </div>
 
       <form className="mt-3 flex shrink-0 flex-col gap-2" onSubmit={(e) => void handleSubmit(e)}>
-        <label className="flex min-h-0 flex-1 flex-col gap-1 text-xs">
+        <label className="flex shrink-0 flex-col gap-1 text-xs">
           <span className="font-medium text-soil-600">Message</span>
           <textarea
             className="min-h-[72px] resize-y rounded-md border border-soil-200 bg-white px-3 py-2 text-sm text-soil-900 placeholder:text-soil-400 focus:border-soil-400 focus:outline-none focus:ring-1 focus:ring-soil-300"
