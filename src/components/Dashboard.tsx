@@ -2,8 +2,6 @@ import { useCallback, useMemo } from 'react';
 import { buildAgronomistRoutes } from '@/lib/routeGeometry';
 import { useOperationsOutlet } from '@/pages/OperationsLayout';
 import { AgronomistRouteList } from './AgronomistRouteList';
-import { DecisionTimeline } from './DecisionTimeline';
-import { ForceAssignPanel } from './ForceAssignPanel';
 import { ScenarioChatPanel } from './ScenarioChatPanel';
 import { ScenarioRouteMap } from './ScenarioRouteMap';
 
@@ -11,26 +9,13 @@ export function Dashboard() {
   const {
     sid,
     scenario,
-    assignmentsResult,
     tasks,
     fields,
     assignments,
     agronomists,
-    hybridSteps,
     scenarioLoading,
     refetchAssignments,
-    selectedTaskId,
   } = useOperationsOutlet();
-
-  const selectedAssignment = useMemo(
-    () => assignments.find((a) => a.task_id === selectedTaskId) ?? null,
-    [assignments, selectedTaskId]
-  );
-
-  const selectedHybrid = useMemo(
-    () => hybridSteps.find((h) => h.task_id === selectedTaskId) ?? null,
-    [hybridSteps, selectedTaskId]
-  );
 
   const routeMapKey = useMemo(
     () =>
@@ -46,10 +31,6 @@ export function Dashboard() {
     [agronomists, tasks, fields, assignments]
   );
 
-  const afterMutation = () => {
-    void refetchAssignments({ refresh: false });
-  };
-
   const onChatMapUpdated = useCallback(() => {
     void refetchAssignments({ refresh: false });
   }, [refetchAssignments]);
@@ -60,80 +41,6 @@ export function Dashboard() {
     <div className="flex min-h-0 flex-1 flex-col gap-4 max-xl:flex-col xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(260px,22vw)_1fr_minmax(280px,24vw)] xl:gap-5">
       <aside className="max-xl:order-2 flex min-h-0 flex-col gap-4 overflow-y-auto xl:col-start-1 xl:row-start-1 xl:h-full xl:max-h-full">
         <AgronomistRouteList routes={routes} />
-
-        {assignmentsResult ? (
-          <div className="rounded-lg border border-soil-200 bg-white p-4">
-            <h2 className="text-sm font-semibold text-soil-900">Solver</h2>
-            <dl className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
-              <div>
-                <dt className="text-soil-500">Feasible</dt>
-                <dd className="font-medium text-soil-900">{assignmentsResult.feasible ? 'Yes' : 'No'}</dd>
-              </div>
-              <div>
-                <dt className="text-soil-500">Score</dt>
-                <dd className="font-medium text-soil-900">{assignmentsResult.score.toFixed(2)}</dd>
-              </div>
-              <div className="sm:col-span-2">
-                <dt className="text-soil-500">Relaxations</dt>
-                <dd className="font-medium text-soil-900">
-                  {assignmentsResult.relaxations_applied?.length
-                    ? assignmentsResult.relaxations_applied.join(', ')
-                    : 'None'}
-                </dd>
-              </div>
-            </dl>
-          </div>
-        ) : null}
-
-        <div className="rounded-lg border border-soil-200 bg-white p-4">
-          <h2 className="text-sm font-semibold text-soil-900">Selected task</h2>
-          {!selectedTaskId ? (
-            <p className="mt-2 text-xs text-soil-600">Select a task on the Tasks tab.</p>
-          ) : (
-            <div className="mt-2 space-y-3 text-xs text-soil-800">
-              <p>
-                <span className="text-soil-500">Task ID</span>{' '}
-                <span className="font-mono font-medium">{selectedTaskId}</span>
-              </p>
-              {selectedAssignment ? (
-                <div className="rounded-md border border-soil-100 bg-soil-50/80 p-3">
-                  <p className="font-medium text-soil-900">Assignment</p>
-                  <ul className="mt-1.5 space-y-1 text-soil-700">
-                    <li>Agronomist: {selectedAssignment.agronomist_id}</li>
-                    <li>Start minute: {selectedAssignment.start_minute}</li>
-                    <li>Travel minutes: {selectedAssignment.travel_minutes}</li>
-                    {selectedAssignment.reasoning ? (
-                      <li className="pt-1 text-soil-600">Reasoning: {selectedAssignment.reasoning}</li>
-                    ) : null}
-                  </ul>
-                </div>
-              ) : (
-                <p className="text-soil-600">No assignment row for this task in the current result.</p>
-              )}
-              {selectedHybrid ? (
-                <div className="rounded-md border border-leaf-200/80 bg-leaf-50/50 p-3">
-                  <p className="font-medium text-soil-900">LLM step</p>
-                  <p className="mt-1.5 text-soil-700">{selectedHybrid.llm_reasoning}</p>
-                  <p className="mt-1.5 text-[11px] text-soil-600">
-                    Suggested: {selectedHybrid.llm_agronomist_id} · OR-Tools:{' '}
-                    {selectedHybrid.ortools_feasible ? 'ok' : 'failed'} (score {selectedHybrid.ortools_score.toFixed(2)})
-                  </p>
-                </div>
-              ) : (
-                <p className="text-soil-600">No hybrid step for this task.</p>
-              )}
-            </div>
-          )}
-        </div>
-
-        <ForceAssignPanel
-          sid={sid}
-          agronomists={agronomists}
-          selectedTaskId={selectedTaskId}
-          onSuccess={afterMutation}
-        />
-
-        <DecisionTimeline steps={hybridSteps} />
       </aside>
 
       <section

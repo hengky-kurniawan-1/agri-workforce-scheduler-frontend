@@ -16,7 +16,7 @@ export function TasksPage() {
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       <div className="min-w-0">
         <h2 className="text-sm font-semibold text-soil-900">Tasks</h2>
-        <p className="mt-0.5 text-xs text-soil-500">Choose a task; selection is shared with the Dashboard.</p>
+        <p className="mt-0.5 text-xs text-soil-500">Choose a task to highlight it in the list.</p>
       </div>
       <TaskList
         tasks={tasks}
