@@ -96,6 +96,24 @@ export type HybridStep = {
     ortools_score: number;
 };
 
+export type JobAcceptedResponse = {
+    job_id: string;
+};
+
+export type JobStatusResponse = {
+    job_id: string;
+    kind: 'chat' | 'reoptimize' | 'assignments';
+    status: 'pending' | 'running' | 'completed' | 'failed';
+    result?: ({
+    [key: string]: unknown;
+} | null);
+    error?: (string | null);
+};
+
+export type kind = 'chat' | 'reoptimize' | 'assignments';
+
+export type status = 'pending' | 'running' | 'completed' | 'failed';
+
 export type ScenarioInfo = {
     scenario_id: string;
     agronomists: Array<Agronomist>;
@@ -126,11 +144,25 @@ export type ValidationError = {
 
 export type HealthHealthGetResponse = (unknown);
 
+export type GetFieldsFieldsGetResponse = (Array<Field>);
+
 export type PostChatChatPostData = {
     requestBody: ChatRequest;
 };
 
 export type PostChatChatPostResponse = (ChatResponse);
+
+export type PostChatJobChatJobsPostData = {
+    requestBody: ChatRequest;
+};
+
+export type PostChatJobChatJobsPostResponse = (JobAcceptedResponse);
+
+export type GetJobStatusJobsJobIdGetData = {
+    jobId: string;
+};
+
+export type GetJobStatusJobsJobIdGetResponse = (JobStatusResponse);
 
 export type GetScenarioScenariosSidGetData = {
     sid: string;
@@ -152,6 +184,20 @@ export type GetScenarioAssignmentsScenariosSidAssignmentsGetData = {
 
 export type GetScenarioAssignmentsScenariosSidAssignmentsGetResponse = (unknown);
 
+export type PostAssignmentsJobScenariosSidAssignmentsJobsPostData = {
+    /**
+     * If set, result payload only includes this agronomist's assignments.
+     */
+    agronomistId?: (string | null);
+    /**
+     * When true, runs full LLM+solver recompute like GET .../assignments?refresh=true.
+     */
+    refresh?: boolean;
+    sid: string;
+};
+
+export type PostAssignmentsJobScenariosSidAssignmentsJobsPostResponse = (JobAcceptedResponse);
+
 export type PostForceAssignScenariosSidForceAssignPostData = {
     requestBody: ForceAssignRequest;
     sid: string;
@@ -171,3 +217,9 @@ export type PostReoptimizeScenariosSidReoptimizePostData = {
 };
 
 export type PostReoptimizeScenariosSidReoptimizePostResponse = (Decision);
+
+export type PostReoptimizeJobScenariosSidReoptimizeJobsPostData = {
+    sid: string;
+};
+
+export type PostReoptimizeJobScenariosSidReoptimizeJobsPostResponse = (JobAcceptedResponse);
