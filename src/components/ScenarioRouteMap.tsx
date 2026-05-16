@@ -17,13 +17,16 @@ type Props = {
   className?: string;
 };
 
-function FitFields({ fieldPositions }: { fieldPositions: [number, number][] }) {
+function FitMapBounds({ positions }: { positions: [number, number][] }) {
   const map = useMap();
   useEffect(() => {
-    if (fieldPositions.length === 0) return;
-    const b = L.latLngBounds(fieldPositions);
+    if (positions.length === 0) return;
+    let b = L.latLngBounds(positions);
+    if (b.getNorth() === b.getSouth() && b.getEast() === b.getWest()) {
+      b = b.pad(0.02);
+    }
     map.fitBounds(b, { padding: [40, 40], maxZoom: 14 });
-  }, [map, fieldPositions]);
+  }, [map, positions]);
   return null;
 }
 
@@ -47,6 +50,17 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
     () => fields.map((f) => [f.location[0], f.location[1]] as [number, number]),
     [fields]
   );
+
+  const fitPositions = useMemo(() => {
+    const points: [number, number][] = [...fieldPositions];
+    for (const r of routes) {
+      for (const s of r.stops) points.push([s.lat, s.lng]);
+      const osrm = byAgronomistId.get(r.agronomistId);
+      const line = osrm?.roadPositions ?? r.positions;
+      points.push(...line);
+    }
+    return points;
+  }, [fieldPositions, routes, byAgronomistId]);
 
   const tasksByField = useMemo(() => {
     const m = new Map<string, string[]>();
@@ -79,7 +93,7 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <FitFields fieldPositions={fieldPositions} />
+            <FitMapBounds positions={fitPositions} />
             {routes.map((r) => {
               if (r.positions.length < 2) return null;
               const osrm = byAgronomistId.get(r.agronomistId);
