@@ -46,11 +46,6 @@ export function App() {
             <Route path="/scenarios" element={<ScenariosPage />} />
           </Routes>
         </main>
-        <footer className="border-t border-soil-200/60 bg-white/80 py-4 text-center text-xs text-soil-500">
-          <div className="mx-auto w-full max-w-[1920px] px-4 sm:px-6 lg:px-6 xl:px-8">
-            Configure <code className="rounded bg-soil-100 px-1">VITE_API_URL</code> to point at your API.
-          </div>
-        </footer>
       </div>
     </BrowserRouter>
   );
