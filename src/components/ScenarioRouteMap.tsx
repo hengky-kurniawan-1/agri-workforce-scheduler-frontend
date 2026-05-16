@@ -3,6 +3,7 @@ import { CircleMarker, MapContainer, Polyline, Popup, TileLayer, useMap } from '
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { Assignment, Field, Task } from '@/api/generated/types.gen';
+import { useOsrmRoutes } from '@/hooks/useOsrmRoutes';
 import type { AgronomistRoutePlan } from '@/lib/routeGeometry';
 
 type Props = {
@@ -24,7 +25,22 @@ function FitFields({ fieldPositions }: { fieldPositions: [number, number][] }) {
   return null;
 }
 
+function mapSubtitle(status: ReturnType<typeof useOsrmRoutes>['aggregateStatus']): string {
+  switch (status) {
+    case 'loading':
+      return 'Fetching road paths…';
+    case 'ok':
+      return 'Road paths (OpenStreetMap + OSRM)';
+    case 'fallback':
+      return 'Straight-line fallback (routing unavailable)';
+    default:
+      return 'Toggle routes in the sidebar';
+  }
+}
+
 export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, className }: Props) {
+  const { byAgronomistId, aggregateStatus } = useOsrmRoutes(routes);
+
   const fieldPositions = useMemo(
     () => fields.map((f) => [f.location[0], f.location[1]] as [number, number]),
     [fields]
@@ -51,9 +67,7 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
     >
       <div className="shrink-0 border-b border-soil-100 px-4 py-3">
         <h2 className="text-sm font-semibold text-soil-900">Map</h2>
-        <p className="mt-0.5 text-xs text-soil-500">
-          Straight-line paths between field centroids · toggle routes in the sidebar
-        </p>
+        <p className="mt-0.5 text-xs text-soil-500">{mapSubtitle(aggregateStatus)}</p>
       </div>
       <div className="min-h-[420px] flex-1 overflow-hidden p-3 xl:min-h-0">
         <div className="h-full w-full overflow-hidden rounded-md border border-soil-100">
@@ -63,15 +77,23 @@ export function ScenarioRouteMap({ fields, tasks, assignments, routes, mapKey, c
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             <FitFields fieldPositions={fieldPositions} />
-            {routes.map((r) =>
-              r.positions.length >= 2 ? (
+            {routes.map((r) => {
+              if (r.positions.length < 2) return null;
+              const osrm = byAgronomistId.get(r.agronomistId);
+              const positions = osrm?.roadPositions ?? r.positions;
+              const isFallback = osrm?.status === 'fallback';
+              return (
                 <Polyline
                   key={r.agronomistId}
-                  positions={r.positions}
-                  pathOptions={{ color: r.color, weight: 4, opacity: 0.88 }}
+                  positions={positions}
+                  pathOptions={{
+                    color: r.color,
+                    weight: 4,
+                    opacity: isFallback ? 0.55 : 0.88,
+                  }}
                 />
-              ) : null
-            )}
+              );
+            })}
             {fields.map((f) => {
               const [lat, lng] = f.location;
               const taskIds = tasksByField.get(f.id);
