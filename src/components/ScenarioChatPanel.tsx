@@ -1,6 +1,11 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import type { ChatMessage, ChatUiFlags } from '@/api/generated';
-import { useChat } from '@/api/hooks';
+import { useChat, useConversationMessages } from '@/api/hooks';
+import {
+	clearConversationId,
+	loadConversationId,
+	saveConversationId,
+} from '@/lib/chatSession';
 
 type Props = {
 	onChatFlags?: (flags: ChatUiFlags) => void;
@@ -8,25 +13,46 @@ type Props = {
 };
 
 export function ScenarioChatPanel({ onChatFlags, className }: Props) {
-	const { send, submitting, error } = useChat({ onChatFlags });
-	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [conversationId, setConversationId] = useState<string | null>(() =>
+		loadConversationId()
+	);
+	const { send, submitting, error: sendError } = useChat({ onChatFlags });
+	const {
+		messages,
+		setMessages,
+		loading: historyLoading,
+		error: historyError,
+	} = useConversationMessages(conversationId);
 	const [draft, setDraft] = useState('');
+
+	useEffect(() => {
+		if (historyError) {
+			clearConversationId();
+			setConversationId(null);
+		}
+	}, [historyError]);
 
 	async function handleSubmit(e: FormEvent) {
 		e.preventDefault();
 		const content = draft.trim();
 		if (!content || submitting) return;
+
 		const userMsg: ChatMessage = { role: 'user', content };
-		const next = [...messages, userMsg];
-		setMessages(next);
+		setMessages((prev) => [...prev, userMsg]);
 		setDraft('');
+
 		try {
-			const res = await send(next);
-			setMessages([...next, { role: 'assistant', content: res.reply }]);
+			const res = await send(content, conversationId);
+			saveConversationId(res.conversation_id);
+			setConversationId(res.conversation_id);
+			setMessages((prev) => [...prev, { role: 'assistant', content: res.reply }]);
 		} catch {
-			/* error surfaced via hook */
+			setMessages((prev) => prev.slice(0, -1));
 		}
 	}
+
+	const error = sendError ?? historyError;
+	const busy = submitting || historyLoading;
 
 	return (
 		<section
@@ -36,13 +62,15 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 			<p className="mt-1 shrink-0 text-[11px] leading-snug text-soil-400">
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">/chat</code>
 				{` · `}
-				Reloads assignments when{' '}
+				History is kept for this browser tab session. Reloads assignments when{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">map_updated</code> or{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
 			</p>
 
 			<div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">
-				{messages.length === 0 ? (
+				{historyLoading ? (
+					<p className="text-xs text-soil-500">Loading conversation…</p>
+				) : messages.length === 0 ? (
 					<p className="text-xs text-soil-500">Ask about the schedule…</p>
 				) : (
 					messages.map((m) => (
@@ -71,13 +99,13 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 						value={draft}
 						onChange={(e) => setDraft(e.target.value)}
 						placeholder="Describe what you want to change…"
-						disabled={submitting}
+						disabled={busy}
 						rows={2}
 					/>
 				</label>
 				<button
 					type="submit"
-					disabled={submitting || !draft.trim()}
+					disabled={busy || !draft.trim()}
 					className="rounded-md bg-soil-900 px-4 py-2 text-xs font-medium text-white hover:bg-soil-800 disabled:opacity-50"
 				>
 					{submitting ? 'Sending…' : 'Send'}

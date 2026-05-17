@@ -3,26 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type {
-	GetAgronomistsAgronomistsGetResponse,
-	GetAssignmentsAssignmentsGetData,
-	GetAssignmentsAssignmentsGetResponse,
-	GetFieldsFieldsGetResponse,
-	GetJobStatusJobsJobIdGetData,
-	GetJobStatusJobsJobIdGetResponse,
-	GetScheduleScheduleGetResponse,
-	HealthHealthGetResponse,
-	PostAddTaskAddTaskPostData,
-	PostAddTaskAddTaskPostResponse,
-	PostAssignmentsJobAssignmentsJobsPostData,
-	PostAssignmentsJobAssignmentsJobsPostResponse,
-	PostChatChatPostData,
-	PostChatChatPostResponse,
-	PostChatJobChatJobsPostData,
-	PostChatJobChatJobsPostResponse,
-	PostForceAssignForceAssignPostData,
-	PostForceAssignForceAssignPostResponse,
-} from './types.gen';
+import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, GetConversationMessagesConversationsConversationIdMessagesGetData, GetConversationMessagesConversationsConversationIdMessagesGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse } from './types.gen';
 
 /**
  * Health
@@ -30,10 +11,10 @@ import type {
  * @throws ApiError
  */
 export const healthHealthGet = (): CancelablePromise<HealthHealthGetResponse> => {
-	return __request(OpenAPI, {
-		method: 'GET',
-		url: '/health',
-	});
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/health'
+    });
 };
 
 /**
@@ -42,10 +23,10 @@ export const healthHealthGet = (): CancelablePromise<HealthHealthGetResponse> =>
  * @throws ApiError
  */
 export const getFieldsFieldsGet = (): CancelablePromise<GetFieldsFieldsGetResponse> => {
-	return __request(OpenAPI, {
-		method: 'GET',
-		url: '/fields',
-	});
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/fields'
+    });
 };
 
 /**
@@ -53,13 +34,32 @@ export const getFieldsFieldsGet = (): CancelablePromise<GetFieldsFieldsGetRespon
  * @returns Agronomist Successful Response
  * @throws ApiError
  */
-export const getAgronomistsAgronomistsGet =
-	(): CancelablePromise<GetAgronomistsAgronomistsGetResponse> => {
-		return __request(OpenAPI, {
-			method: 'GET',
-			url: '/agronomists',
-		});
-	};
+export const getAgronomistsAgronomistsGet = (): CancelablePromise<GetAgronomistsAgronomistsGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/agronomists'
+    });
+};
+
+/**
+ * Get Conversation Messages
+ * @param data The data for the request.
+ * @param data.conversationId
+ * @returns ChatMessage Successful Response
+ * @throws ApiError
+ */
+export const getConversationMessagesConversationsConversationIdMessagesGet = (data: GetConversationMessagesConversationsConversationIdMessagesGetData): CancelablePromise<GetConversationMessagesConversationsConversationIdMessagesGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/conversations/{conversation_id}/messages',
+        path: {
+            conversation_id: data.conversationId
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
+};
 
 /**
  * Post Chat
@@ -68,18 +68,16 @@ export const getAgronomistsAgronomistsGet =
  * @returns ChatResponse Successful Response
  * @throws ApiError
  */
-export const postChatChatPost = (
-	data: PostChatChatPostData
-): CancelablePromise<PostChatChatPostResponse> => {
-	return __request(OpenAPI, {
-		method: 'POST',
-		url: '/chat',
-		body: data.requestBody,
-		mediaType: 'application/json',
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const postChatChatPost = (data: PostChatChatPostData): CancelablePromise<PostChatChatPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/chat',
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -89,18 +87,16 @@ export const postChatChatPost = (
  * @returns JobAcceptedResponse Successful Response
  * @throws ApiError
  */
-export const postChatJobChatJobsPost = (
-	data: PostChatJobChatJobsPostData
-): CancelablePromise<PostChatJobChatJobsPostResponse> => {
-	return __request(OpenAPI, {
-		method: 'POST',
-		url: '/chat/jobs',
-		body: data.requestBody,
-		mediaType: 'application/json',
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const postChatJobChatJobsPost = (data: PostChatJobChatJobsPostData): CancelablePromise<PostChatJobChatJobsPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/chat/jobs',
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -110,19 +106,17 @@ export const postChatJobChatJobsPost = (
  * @returns JobStatusResponse Successful Response
  * @throws ApiError
  */
-export const getJobStatusJobsJobIdGet = (
-	data: GetJobStatusJobsJobIdGetData
-): CancelablePromise<GetJobStatusJobsJobIdGetResponse> => {
-	return __request(OpenAPI, {
-		method: 'GET',
-		url: '/jobs/{job_id}',
-		path: {
-			job_id: data.jobId,
-		},
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const getJobStatusJobsJobIdGet = (data: GetJobStatusJobsJobIdGetData): CancelablePromise<GetJobStatusJobsJobIdGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/jobs/{job_id}',
+        path: {
+            job_id: data.jobId
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -131,10 +125,10 @@ export const getJobStatusJobsJobIdGet = (
  * @throws ApiError
  */
 export const getScheduleScheduleGet = (): CancelablePromise<GetScheduleScheduleGetResponse> => {
-	return __request(OpenAPI, {
-		method: 'GET',
-		url: '/schedule',
-	});
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/schedule'
+    });
 };
 
 /**
@@ -145,20 +139,18 @@ export const getScheduleScheduleGet = (): CancelablePromise<GetScheduleScheduleG
  * @returns AssignmentsResult Successful Response
  * @throws ApiError
  */
-export const getAssignmentsAssignmentsGet = (
-	data: GetAssignmentsAssignmentsGetData = {}
-): CancelablePromise<GetAssignmentsAssignmentsGetResponse> => {
-	return __request(OpenAPI, {
-		method: 'GET',
-		url: '/assignments',
-		query: {
-			agronomist_id: data.agronomistId,
-			refresh: data.refresh,
-		},
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const getAssignmentsAssignmentsGet = (data: GetAssignmentsAssignmentsGetData = {}): CancelablePromise<GetAssignmentsAssignmentsGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/assignments',
+        query: {
+            agronomist_id: data.agronomistId,
+            refresh: data.refresh
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -169,20 +161,18 @@ export const getAssignmentsAssignmentsGet = (
  * @returns JobAcceptedResponse Successful Response
  * @throws ApiError
  */
-export const postAssignmentsJobAssignmentsJobsPost = (
-	data: PostAssignmentsJobAssignmentsJobsPostData = {}
-): CancelablePromise<PostAssignmentsJobAssignmentsJobsPostResponse> => {
-	return __request(OpenAPI, {
-		method: 'POST',
-		url: '/assignments/jobs',
-		query: {
-			refresh: data.refresh,
-			agronomist_id: data.agronomistId,
-		},
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const postAssignmentsJobAssignmentsJobsPost = (data: PostAssignmentsJobAssignmentsJobsPostData = {}): CancelablePromise<PostAssignmentsJobAssignmentsJobsPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/assignments/jobs',
+        query: {
+            refresh: data.refresh,
+            agronomist_id: data.agronomistId
+        },
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -192,18 +182,16 @@ export const postAssignmentsJobAssignmentsJobsPost = (
  * @returns Decision Successful Response
  * @throws ApiError
  */
-export const postForceAssignForceAssignPost = (
-	data: PostForceAssignForceAssignPostData
-): CancelablePromise<PostForceAssignForceAssignPostResponse> => {
-	return __request(OpenAPI, {
-		method: 'POST',
-		url: '/force-assign',
-		body: data.requestBody,
-		mediaType: 'application/json',
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const postForceAssignForceAssignPost = (data: PostForceAssignForceAssignPostData): CancelablePromise<PostForceAssignForceAssignPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/force-assign',
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };
 
 /**
@@ -214,16 +202,14 @@ export const postForceAssignForceAssignPost = (
  * @returns AddTaskResponse Successful Response
  * @throws ApiError
  */
-export const postAddTaskAddTaskPost = (
-	data: PostAddTaskAddTaskPostData
-): CancelablePromise<PostAddTaskAddTaskPostResponse> => {
-	return __request(OpenAPI, {
-		method: 'POST',
-		url: '/add-task',
-		body: data.requestBody,
-		mediaType: 'application/json',
-		errors: {
-			422: 'Validation Error',
-		},
-	});
+export const postAddTaskAddTaskPost = (data: PostAddTaskAddTaskPostData): CancelablePromise<PostAddTaskAddTaskPostResponse> => {
+    return __request(OpenAPI, {
+        method: 'POST',
+        url: '/add-task',
+        body: data.requestBody,
+        mediaType: 'application/json',
+        errors: {
+            422: 'Validation Error'
+        }
+    });
 };

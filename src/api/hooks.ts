@@ -10,6 +10,7 @@ import type {
 } from './generated';
 import {
 	getAssignmentsAssignmentsGet,
+	getConversationMessagesConversationsConversationIdMessagesGet,
 	getScheduleScheduleGet,
 	postChatChatPost,
 	postForceAssignForceAssignPost,
@@ -138,11 +139,16 @@ export function useChat(opts?: UseChatOpts) {
 	const [error, setError] = useState<string | null>(null);
 
 	const send = useCallback(
-		async (messages: ChatMessage[]): Promise<ChatResponse> => {
+		async (message: string, conversationId?: string | null): Promise<ChatResponse> => {
 			setSubmitting(true);
 			setError(null);
 			try {
-				const res = await postChatChatPost({ requestBody: { messages } });
+				const res = await postChatChatPost({
+					requestBody: {
+						conversation_id: conversationId ?? null,
+						message,
+					},
+				});
 				const flags = res.flags;
 				if (flags && (flags.map_updated || flags.schedule_updated || flags.roster_updated)) {
 					onChatFlags?.(flags);
@@ -159,4 +165,50 @@ export function useChat(opts?: UseChatOpts) {
 	);
 
 	return { send, submitting, error };
+}
+
+function displayMessages(messages: ChatMessage[]): ChatMessage[] {
+	return messages.filter((m) => m.role !== 'system');
+}
+
+export function useConversationMessages(conversationId: string | null) {
+	const [messages, setMessages] = useState<ChatMessage[]>([]);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (!conversationId) {
+			setMessages([]);
+			setLoading(false);
+			setError(null);
+			return;
+		}
+
+		let cancelled = false;
+		setLoading(true);
+		setError(null);
+
+		void (async () => {
+			try {
+				const res =
+					await getConversationMessagesConversationsConversationIdMessagesGet({
+						conversationId,
+					});
+				if (!cancelled) setMessages(displayMessages(res));
+			} catch (e) {
+				if (!cancelled) {
+					setError(getErrorMessage(e));
+					setMessages([]);
+				}
+			} finally {
+				if (!cancelled) setLoading(false);
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [conversationId]);
+
+	return { messages, setMessages, loading, error };
 }
