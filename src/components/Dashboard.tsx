@@ -101,7 +101,7 @@ export function Dashboard() {
 	const hasFields = fields.length > 0;
 
 	return (
-		<div className="flex min-h-0 flex-1 flex-col gap-4 max-xl:flex-col xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(260px,22vw)_1fr_minmax(280px,24vw)] xl:gap-5">
+		<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden max-xl:flex-col xl:grid xl:h-full xl:min-h-0 xl:grid-cols-[minmax(260px,22vw)_1fr_minmax(280px,24vw)] xl:gap-5">
 			<aside className="max-xl:order-2 flex min-h-0 flex-col gap-4 overflow-y-auto xl:col-start-1 xl:row-start-1 xl:h-full xl:max-h-full">
 				<AgronomistRouteList
 					routes={routes}

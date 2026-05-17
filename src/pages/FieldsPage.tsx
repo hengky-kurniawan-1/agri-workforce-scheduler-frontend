@@ -5,7 +5,7 @@ export function FieldsPage() {
 
 	if (loading) {
 		return (
-			<div className="flex min-h-0 flex-1 flex-col gap-4">
+			<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
 				<div className="flex items-center gap-2 rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
 					<span className="inline-block h-2 w-2 animate-pulse-soft rounded-full bg-leaf-500" />
 					Loading schedule…
@@ -16,7 +16,7 @@ export function FieldsPage() {
 
 	if (error) {
 		return (
-			<div className="flex min-h-0 flex-1 flex-col gap-4">
+			<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
 				<div
 					className="rounded-lg border border-red-200 bg-red-50/90 p-4 text-sm text-red-800"
 					role="alert"
@@ -28,7 +28,7 @@ export function FieldsPage() {
 	}
 
 	return (
-		<div className="flex min-h-0 flex-1 flex-col gap-4">
+		<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
 			<div className="min-w-0">
 				<h2 className="text-sm font-semibold text-soil-900">Fields</h2>
 				<p className="mt-0.5 text-xs text-soil-500">All fields in the loaded schedule.</p>

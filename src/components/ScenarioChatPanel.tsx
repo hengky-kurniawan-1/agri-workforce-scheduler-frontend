@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useEffect, useRef, useState } from 'react';
 import type { ChatMessage, ChatUiFlags } from '@/api/generated';
 import { useChat, useConversationMessages } from '@/api/hooks';
 import {
@@ -24,6 +24,13 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 		error: historyError,
 	} = useConversationMessages(conversationId);
 	const [draft, setDraft] = useState('');
+	const messagesRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const el = messagesRef.current;
+		if (!el || messages.length === 0) return;
+		el.scrollTop = el.scrollHeight;
+	}, [messages.length]);
 
 	useEffect(() => {
 		if (historyError) {
@@ -67,7 +74,10 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
 			</p>
 
-			<div className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm">
+			<div
+				ref={messagesRef}
+				className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm"
+			>
 				{historyLoading ? (
 					<p className="text-xs text-soil-500">Loading conversation…</p>
 				) : messages.length === 0 ? (
@@ -95,7 +105,7 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 				<label className="flex shrink-0 flex-col gap-1 text-xs">
 					<span className="font-medium text-soil-600">Message</span>
 					<textarea
-						className="min-h-[72px] resize-y rounded-md border border-soil-200 bg-white px-3 py-2 text-sm text-soil-900 placeholder:text-soil-400 focus:border-soil-400 focus:outline-none focus:ring-1 focus:ring-soil-300"
+						className="min-h-[72px] resize-none rounded-md border border-soil-200 bg-white px-3 py-2 text-sm text-soil-900 placeholder:text-soil-400 focus:border-soil-400 focus:outline-none focus:ring-1 focus:ring-soil-300"
 						value={draft}
 						onChange={(e) => setDraft(e.target.value)}
 						placeholder="Describe what you want to change…"

@@ -14,7 +14,7 @@ const navClass = ({ isActive }: { isActive: boolean }) =>
 export function App() {
 	return (
 		<BrowserRouter>
-			<div className="flex min-h-screen flex-col">
+			<div className="flex h-dvh flex-col overflow-hidden">
 				<header className="border-b border-soil-200/80 bg-white/90 backdrop-blur-md">
 					<div className="mx-auto flex w-full max-w-[1920px] flex-wrap items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-6 xl:px-8">
 						<Link to="/" className="font-display text-lg font-semibold text-soil-900">
@@ -36,7 +36,7 @@ export function App() {
 						</nav>
 					</div>
 				</header>
-				<main className="flex min-h-0 flex-1 flex-col">
+				<main className="flex min-h-0 flex-1 flex-col overflow-hidden">
 					<Routes>
 						<Route element={<OperationsLayout />}>
 							<Route path="/" element={<Dashboard />} />
