@@ -12,6 +12,11 @@ type Props = {
 	className?: string;
 };
 
+const INITIAL_ASSISTANT_MESSAGE: ChatMessage = {
+	role: 'assistant',
+	content: 'Hello!',
+};
+
 export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 	const [conversationId, setConversationId] = useState<string | null>(() =>
 		loadConversationId()
@@ -25,12 +30,14 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 	} = useConversationMessages(conversationId);
 	const [draft, setDraft] = useState('');
 	const messagesRef = useRef<HTMLDivElement>(null);
+	const visibleMessages =
+		messages.length > 0 || historyLoading ? messages : [INITIAL_ASSISTANT_MESSAGE];
 
 	useEffect(() => {
 		const el = messagesRef.current;
-		if (!el || messages.length === 0) return;
+		if (!el || visibleMessages.length === 0) return;
 		el.scrollTop = el.scrollHeight;
-	}, [messages.length]);
+	}, [visibleMessages.length]);
 
 	useEffect(() => {
 		if (historyError) {
@@ -80,10 +87,8 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 			>
 				{historyLoading ? (
 					<p className="text-xs text-soil-500">Loading conversation…</p>
-				) : messages.length === 0 ? (
-					<p className="text-xs text-soil-500">Ask about the schedule…</p>
 				) : (
-					messages.map((m) => (
+					visibleMessages.map((m) => (
 						<div
 							key={`${m.role}:${m.content}`}
 							className={`rounded-md px-3 py-2 text-sm ${
