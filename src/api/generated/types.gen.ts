@@ -67,15 +67,15 @@ export type ChatResponse = {
 
 export type ChatUiFlags = {
     /**
-     * True when the LLM successfully added a field via add_field; client should refetch GET /fields (or GET /schedule) and rerender the map.
+     * True when the LLM successfully added a field via add_field; client should refetch GET /fields and rerender the map.
      */
     map_updated?: boolean;
     /**
-     * True when add_task_with_lns or force_assign updated the saved schedule.
+     * True when add_task_with_lns, force_assign, recompute_assignments, or read_task_assignments with refresh=true updated the saved schedule.
      */
     schedule_updated?: boolean;
     /**
-     * True when the LLM successfully added an agronomist via add_agronomist; client should refetch GET /agronomists (or GET /schedule).
+     * True when the LLM successfully added an agronomist via add_agronomist; client should refetch GET /agronomists.
      */
     roster_updated?: boolean;
 };
@@ -135,12 +135,6 @@ export type kind = 'chat' | 'assignments';
 
 export type status = 'pending' | 'running' | 'completed' | 'failed';
 
-export type ScheduleInfo = {
-    agronomists: Array<Agronomist>;
-    tasks: Array<Task>;
-    fields?: Array<Field>;
-};
-
 export type Task = {
     id: string;
     field_id: string;
@@ -177,6 +171,8 @@ export type GetFieldsFieldsGetResponse = (Array<Field>);
 
 export type GetAgronomistsAgronomistsGetResponse = (Array<Agronomist>);
 
+export type GetTasksTasksGetResponse = (Array<Task>);
+
 export type GetConversationMessagesConversationsConversationIdMessagesGetData = {
     conversationId: string;
 };
@@ -200,8 +196,6 @@ export type GetJobStatusJobsJobIdGetData = {
 };
 
 export type GetJobStatusJobsJobIdGetResponse = (JobStatusResponse);
-
-export type GetScheduleScheduleGetResponse = (ScheduleInfo);
 
 export type GetAssignmentsAssignmentsGetData = {
     /**

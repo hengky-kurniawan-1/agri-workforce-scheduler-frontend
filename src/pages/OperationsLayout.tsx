@@ -1,24 +1,27 @@
 import { useCallback, useMemo } from 'react';
 import { Outlet, useOutletContext } from 'react-router-dom';
-import type { AssignmentsResult, ChatUiFlags, ScheduleInfo } from '@/api/generated';
+import type { AssignmentsResult, ChatUiFlags } from '@/api/generated';
 import type { Agronomist, Assignment, Field, HybridStep, Task } from '@/api/generated/types.gen';
-import { useAssignments, useSchedule } from '@/api/hooks';
+import { useAgronomists, useAssignments, useFields, useTasks } from '@/api/hooks';
 import { ChatProvider } from '@/context/ChatContext';
 
 export type OperationsOutletContext = {
-	schedule: ScheduleInfo | null;
 	assignmentsResult: AssignmentsResult | null;
 	tasks: Task[];
 	fields: Field[];
 	assignments: Assignment[];
 	agronomists: Agronomist[];
 	hybridSteps: HybridStep[];
-	scheduleLoading: boolean;
+	tasksLoading: boolean;
+	fieldsLoading: boolean;
+	agronomistsLoading: boolean;
 	assignmentsLoading: boolean;
 	loading: boolean;
 	error: string | null;
+	refetchTasks: ReturnType<typeof useTasks>['refetch'];
+	refetchFields: ReturnType<typeof useFields>['refetch'];
+	refetchAgronomists: ReturnType<typeof useAgronomists>['refetch'];
 	refetchAssignments: ReturnType<typeof useAssignments>['refetch'];
-	refetchSchedule: ReturnType<typeof useSchedule>['refetch'];
 };
 
 export function useOperationsOutlet(): OperationsOutletContext {
@@ -27,11 +30,23 @@ export function useOperationsOutlet(): OperationsOutletContext {
 
 export function OperationsLayout() {
 	const {
-		data: schedule,
-		loading: scheduleLoading,
-		error: scheduleError,
-		refetch: refetchSchedule,
-	} = useSchedule();
+		data: tasksData,
+		loading: tasksLoading,
+		error: tasksError,
+		refetch: refetchTasks,
+	} = useTasks();
+	const {
+		data: fieldsData,
+		loading: fieldsLoading,
+		error: fieldsError,
+		refetch: refetchFields,
+	} = useFields();
+	const {
+		data: agronomistsData,
+		loading: agronomistsLoading,
+		error: agronomistsError,
+		refetch: refetchAgronomists,
+	} = useAgronomists();
 	const {
 		data: assignmentsResult,
 		loading: assignmentsLoading,
@@ -39,57 +54,68 @@ export function OperationsLayout() {
 		refetch: refetchAssignments,
 	} = useAssignments();
 
-	const tasks = schedule?.tasks ?? [];
-	const fields = schedule?.fields ?? [];
+	const tasks = tasksData ?? [];
+	const fields = fieldsData ?? [];
 	const assignments = assignmentsResult?.assignments ?? [];
-	const agronomists = schedule?.agronomists ?? [];
+	const agronomists = agronomistsData ?? [];
 	const hybridSteps = assignmentsResult?.hybrid_steps ?? [];
 
-	const loading = scheduleLoading || assignmentsLoading;
-	const error = scheduleError ?? assignmentsError;
+	const loading = tasksLoading || fieldsLoading || agronomistsLoading || assignmentsLoading;
+	const error = tasksError ?? fieldsError ?? agronomistsError ?? assignmentsError;
 
 	const onChatFlags = useCallback(
 		(flags: ChatUiFlags) => {
-			if (flags.schedule_updated || flags.map_updated || flags.roster_updated) {
-				void refetchSchedule();
-			}
-			if (flags.map_updated || flags.schedule_updated) {
+			if (flags.map_updated) {
+				void refetchFields();
 				void refetchAssignments({ refresh: false });
 			}
+			if (flags.schedule_updated) {
+				void refetchTasks();
+				void refetchAssignments({ refresh: false });
+			}
+			if (flags.roster_updated) {
+				void refetchAgronomists();
+			}
 		},
-		[refetchSchedule, refetchAssignments]
+		[refetchTasks, refetchFields, refetchAgronomists, refetchAssignments]
 	);
 
 	const outletContext = useMemo(
 		(): OperationsOutletContext => ({
-			schedule,
 			assignmentsResult,
 			tasks,
 			fields,
 			assignments,
 			agronomists,
 			hybridSteps,
-			scheduleLoading,
+			tasksLoading,
+			fieldsLoading,
+			agronomistsLoading,
 			assignmentsLoading,
 			loading,
 			error,
+			refetchTasks,
+			refetchFields,
+			refetchAgronomists,
 			refetchAssignments,
-			refetchSchedule,
 		}),
 		[
-			schedule,
 			assignmentsResult,
 			tasks,
 			fields,
 			assignments,
 			agronomists,
 			hybridSteps,
-			scheduleLoading,
+			tasksLoading,
+			fieldsLoading,
+			agronomistsLoading,
 			assignmentsLoading,
 			loading,
 			error,
+			refetchTasks,
+			refetchFields,
+			refetchAgronomists,
 			refetchAssignments,
-			refetchSchedule,
 		]
 	);
 

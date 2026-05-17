@@ -3,7 +3,7 @@
 import type { CancelablePromise } from './core/CancelablePromise';
 import { OpenAPI } from './core/OpenAPI';
 import { request as __request } from './core/request';
-import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, GetConversationMessagesConversationsConversationIdMessagesGetData, GetConversationMessagesConversationsConversationIdMessagesGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetScheduleScheduleGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse } from './types.gen';
+import type { HealthHealthGetResponse, GetFieldsFieldsGetResponse, GetAgronomistsAgronomistsGetResponse, GetTasksTasksGetResponse, GetConversationMessagesConversationsConversationIdMessagesGetData, GetConversationMessagesConversationsConversationIdMessagesGetResponse, PostChatChatPostData, PostChatChatPostResponse, PostChatJobChatJobsPostData, PostChatJobChatJobsPostResponse, GetJobStatusJobsJobIdGetData, GetJobStatusJobsJobIdGetResponse, GetAssignmentsAssignmentsGetData, GetAssignmentsAssignmentsGetResponse, PostAssignmentsJobAssignmentsJobsPostData, PostAssignmentsJobAssignmentsJobsPostResponse, PostForceAssignForceAssignPostData, PostForceAssignForceAssignPostResponse, PostAddTaskAddTaskPostData, PostAddTaskAddTaskPostResponse } from './types.gen';
 
 /**
  * Health
@@ -38,6 +38,18 @@ export const getAgronomistsAgronomistsGet = (): CancelablePromise<GetAgronomists
     return __request(OpenAPI, {
         method: 'GET',
         url: '/agronomists'
+    });
+};
+
+/**
+ * Get Tasks
+ * @returns Task Successful Response
+ * @throws ApiError
+ */
+export const getTasksTasksGet = (): CancelablePromise<GetTasksTasksGetResponse> => {
+    return __request(OpenAPI, {
+        method: 'GET',
+        url: '/tasks'
     });
 };
 
@@ -116,18 +128,6 @@ export const getJobStatusJobsJobIdGet = (data: GetJobStatusJobsJobIdGetData): Ca
         errors: {
             422: 'Validation Error'
         }
-    });
-};
-
-/**
- * Get Schedule
- * @returns ScheduleInfo Successful Response
- * @throws ApiError
- */
-export const getScheduleScheduleGet = (): CancelablePromise<GetScheduleScheduleGetResponse> => {
-    return __request(OpenAPI, {
-        method: 'GET',
-        url: '/schedule'
     });
 };
 

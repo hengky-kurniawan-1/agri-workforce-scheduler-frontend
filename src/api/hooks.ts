@@ -6,17 +6,21 @@ import {
 	saveConversationId,
 } from '@/lib/chatSession';
 import type {
+	Agronomist,
 	AssignmentsResult,
 	ChatMessage,
 	ChatResponse,
 	ChatUiFlags,
+	Field,
 	ForceAssignRequest,
-	ScheduleInfo,
+	Task,
 } from './generated';
 import {
+	getAgronomistsAgronomistsGet,
 	getAssignmentsAssignmentsGet,
 	getConversationMessagesConversationsConversationIdMessagesGet,
-	getScheduleScheduleGet,
+	getFieldsFieldsGet,
+	getTasksTasksGet,
 	postChatChatPost,
 	postForceAssignForceAssignPost,
 } from './generated';
@@ -53,8 +57,8 @@ function getErrorMessage(err: unknown): string {
 	return 'Unknown error';
 }
 
-export function useSchedule(): AsyncState<ScheduleInfo> & { refetch: () => Promise<void> } {
-	const [data, setData] = useState<ScheduleInfo | null>(null);
+function useResource<T>(fetcher: () => Promise<T>): AsyncState<T> & { refetch: () => Promise<void> } {
+	const [data, setData] = useState<T | null>(null);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
@@ -62,7 +66,7 @@ export function useSchedule(): AsyncState<ScheduleInfo> & { refetch: () => Promi
 		setLoading(true);
 		setError(null);
 		try {
-			const res = await getScheduleScheduleGet();
+			const res = await fetcher();
 			setData(res);
 		} catch (e) {
 			setError(getErrorMessage(e));
@@ -70,13 +74,25 @@ export function useSchedule(): AsyncState<ScheduleInfo> & { refetch: () => Promi
 		} finally {
 			setLoading(false);
 		}
-	}, []);
+	}, [fetcher]);
 
 	useEffect(() => {
 		void load();
 	}, [load]);
 
 	return { data, loading, error, refetch: load };
+}
+
+export function useTasks(): AsyncState<Task[]> & { refetch: () => Promise<void> } {
+	return useResource(getTasksTasksGet);
+}
+
+export function useFields(): AsyncState<Field[]> & { refetch: () => Promise<void> } {
+	return useResource(getFieldsFieldsGet);
+}
+
+export function useAgronomists(): AsyncState<Agronomist[]> & { refetch: () => Promise<void> } {
+	return useResource(getAgronomistsAgronomistsGet);
 }
 
 export function useAssignments(): AsyncState<AssignmentsResult> & {

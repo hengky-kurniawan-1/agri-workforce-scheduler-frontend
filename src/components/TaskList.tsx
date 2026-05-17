@@ -18,7 +18,7 @@ export function TaskList({ tasks, assignments, agronomists, loading, error }: Pr
 		return (
 			<div className="flex items-center gap-2 rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
 				<span className="inline-block h-2 w-2 animate-pulse-soft rounded-full bg-leaf-500" />
-				Loading schedule…
+				Loading tasks…
 			</div>
 		);
 	}
@@ -37,7 +37,7 @@ export function TaskList({ tasks, assignments, agronomists, loading, error }: Pr
 	if (!tasks.length) {
 		return (
 			<div className="rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
-				No tasks in this schedule.
+				No tasks yet.
 			</div>
 		);
 	}

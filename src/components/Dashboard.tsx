@@ -7,12 +7,11 @@ import { ScenarioRouteMap } from './ScenarioRouteMap';
 
 export function Dashboard() {
 	const {
-		schedule,
 		tasks,
 		fields,
 		assignments,
 		agronomists,
-		scheduleLoading,
+		fieldsLoading,
 	} = useOperationsOutlet();
 
 	const routeMapKey = useMemo(
@@ -108,15 +107,13 @@ export function Dashboard() {
 						routes={visibleRoutes}
 						mapKey={routeMapKey}
 					/>
-				) : schedule && !scheduleLoading ? (
+				) : !fieldsLoading ? (
 					<div className="flex min-h-[420px] flex-1 flex-col justify-center rounded-lg border border-soil-200 bg-soil-50/80 px-4 py-6 text-center text-sm text-soil-600 xl:min-h-0">
-						Field coordinates are not included in this schedule. Regenerate the client from an API
-						that exposes{' '}
-						<code className="rounded bg-soil-100 px-1 font-mono text-xs">ScheduleInfo.fields</code>.
+						No fields yet.
 					</div>
 				) : (
 					<div className="flex min-h-[240px] flex-1 items-center justify-center rounded-lg border border-dashed border-soil-200 bg-white/60 text-sm text-soil-500 xl:min-h-0">
-						Loading schedule…
+						Loading fields…
 					</div>
 				)}
 			</section>

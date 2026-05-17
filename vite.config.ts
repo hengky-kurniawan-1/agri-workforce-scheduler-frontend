@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
 		server: {
 			port: 5173,
 			proxy: {
-				'^/(health|fields|schedule|assignments|force-assign|chat|jobs|reoptimize|add-task)': {
+				'^/(health|fields|tasks|agronomists|assignments|force-assign|chat|conversations|jobs|reoptimize|add-task)': {
 					target: apiTarget,
 					changeOrigin: true,
 				},
