@@ -4,8 +4,6 @@ type Props = {
 	tasks: Task[];
 	assignments: Assignment[];
 	agronomists: Agronomist[];
-	selectedTaskId: string | null;
-	onSelectTask: (taskId: string) => void;
 	loading: boolean;
 	error: string | null;
 };
@@ -15,15 +13,7 @@ function agronomistLabel(agronomists: Agronomist[], id: string): string {
 	return a ? `${a.name} (${id})` : id;
 }
 
-export function TaskList({
-	tasks,
-	assignments,
-	agronomists,
-	selectedTaskId,
-	onSelectTask,
-	loading,
-	error,
-}: Props) {
+export function TaskList({ tasks, assignments, agronomists, loading, error }: Props) {
 	if (loading) {
 		return (
 			<div className="flex items-center gap-2 rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
@@ -57,37 +47,25 @@ export function TaskList({
 	return (
 		<ul className="space-y-2">
 			{tasks.map((task) => {
-				const active = task.id === selectedTaskId;
 				const asg = byTask[task.id];
 				return (
-					<li key={task.id}>
-						<button
-							type="button"
-							onClick={() => onSelectTask(task.id)}
-							className={`w-full rounded-lg border px-3 py-2.5 text-left text-sm transition ${
-								active
-									? 'border-soil-800 bg-soil-900 text-white ring-1 ring-soil-700'
-									: 'border-soil-200 bg-white hover:border-soil-300'
-							}`}
-						>
-							<div className="flex items-start justify-between gap-2">
-								<span className={`font-medium ${active ? 'text-white' : 'text-soil-900'}`}>
-									{task.field_id} · {task.required_skill}
-								</span>
-								<span
-									className={`shrink-0 rounded-full px-2 py-0.5 text-xs ${
-										active ? 'bg-white/15 text-white' : 'bg-soil-100 text-soil-600'
-									}`}
-								>
-									P{task.priority}
-								</span>
-							</div>
-							<p className={`mt-1 text-xs ${active ? 'text-soil-200' : 'text-soil-600'}`}>
-								{asg
-									? `→ ${agronomistLabel(agronomists, asg.agronomist_id)}`
-									: 'No assignment row yet'}
-							</p>
-						</button>
+					<li
+						key={task.id}
+						className="rounded-lg border border-soil-200 bg-white px-3 py-2.5 text-sm shadow-sm"
+					>
+						<div className="flex items-start justify-between gap-2">
+							<span className="font-medium text-soil-900">
+								{task.field_id} · {task.required_skill}
+							</span>
+							<span className="shrink-0 rounded-full bg-soil-100 px-2 py-0.5 text-xs text-soil-600">
+								P{task.priority}
+							</span>
+						</div>
+						<p className="mt-1 text-xs text-soil-600">
+							{asg
+								? `→ ${agronomistLabel(agronomists, asg.agronomist_id)}`
+								: 'No assignment row yet'}
+						</p>
 					</li>
 				);
 			})}

@@ -2,21 +2,18 @@ import { TaskList } from '@/components/TaskList';
 import { useOperationsOutlet } from '@/pages/OperationsLayout';
 
 export function TasksPage() {
-	const { tasks, assignments, agronomists, selectedTaskId, setSelectedTaskId, loading, error } =
-		useOperationsOutlet();
+	const { tasks, assignments, agronomists, loading, error } = useOperationsOutlet();
 
 	return (
 		<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
 			<div className="min-w-0">
 				<h2 className="text-sm font-semibold text-soil-900">Tasks</h2>
-				<p className="mt-0.5 text-xs text-soil-500">Choose a task to highlight it in the list.</p>
+				<p className="mt-0.5 text-xs text-soil-500">All tasks in the loaded schedule.</p>
 			</div>
 			<TaskList
 				tasks={tasks}
 				assignments={assignments}
 				agronomists={agronomists}
-				selectedTaskId={selectedTaskId}
-				onSelectTask={setSelectedTaskId}
 				loading={loading}
 				error={error}
 			/>
