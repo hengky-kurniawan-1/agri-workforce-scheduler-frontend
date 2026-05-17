@@ -1,5 +1,10 @@
 import type { AxiosError } from 'axios';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+	clearConversationId,
+	loadConversationId,
+	saveConversationId,
+} from '@/lib/chatSession';
 import type {
 	AssignmentsResult,
 	ChatMessage,
@@ -137,18 +142,30 @@ export function useChat(opts?: UseChatOpts) {
 	const onChatFlags = opts?.onChatFlags;
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [conversationId, setConversationId] = useState<string | null>(() =>
+		loadConversationId()
+	);
+	const conversationIdRef = useRef(conversationId);
+	conversationIdRef.current = conversationId;
+
+	const clearConversation = useCallback(() => {
+		clearConversationId();
+		conversationIdRef.current = null;
+		setConversationId(null);
+	}, []);
 
 	const send = useCallback(
-		async (message: string, conversationId?: string | null): Promise<ChatResponse> => {
+		async (message: string): Promise<ChatResponse> => {
 			setSubmitting(true);
 			setError(null);
 			try {
-				const res = await postChatChatPost({
-					requestBody: {
-						conversation_id: conversationId ?? null,
-						message,
-					},
-				});
+				const id = conversationIdRef.current;
+				const requestBody =
+					id != null ? { message, conversation_id: id } : { message };
+				const res = await postChatChatPost({ requestBody });
+				saveConversationId(res.conversation_id);
+				conversationIdRef.current = res.conversation_id;
+				setConversationId(res.conversation_id);
 				const flags = res.flags;
 				if (flags && (flags.map_updated || flags.schedule_updated || flags.roster_updated)) {
 					onChatFlags?.(flags);
@@ -164,14 +181,23 @@ export function useChat(opts?: UseChatOpts) {
 		[onChatFlags]
 	);
 
-	return { send, submitting, error };
+	return { send, submitting, error, conversationId, clearConversation };
 }
 
 function displayMessages(messages: ChatMessage[]): ChatMessage[] {
 	return messages.filter((m) => m.role !== 'system');
 }
 
-export function useConversationMessages(conversationId: string | null) {
+type UseConversationMessagesOpts = {
+	/** When false, skip GET history but keep local messages (e.g. after first POST /chat). */
+	enabled?: boolean;
+};
+
+export function useConversationMessages(
+	conversationId: string | null,
+	opts?: UseConversationMessagesOpts
+) {
+	const enabled = opts?.enabled ?? true;
 	const [messages, setMessages] = useState<ChatMessage[]>([]);
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -179,6 +205,12 @@ export function useConversationMessages(conversationId: string | null) {
 	useEffect(() => {
 		if (!conversationId) {
 			setMessages([]);
+			setLoading(false);
+			setError(null);
+			return;
+		}
+
+		if (!enabled) {
 			setLoading(false);
 			setError(null);
 			return;
@@ -208,7 +240,7 @@ export function useConversationMessages(conversationId: string | null) {
 		return () => {
 			cancelled = true;
 		};
-	}, [conversationId]);
+	}, [conversationId, enabled]);
 
 	return { messages, setMessages, loading, error };
 }

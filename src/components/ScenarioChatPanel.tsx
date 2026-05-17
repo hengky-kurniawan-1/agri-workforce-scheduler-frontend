@@ -1,50 +1,32 @@
 import { type FormEvent, useEffect, useRef, useState } from 'react';
-import type { ChatMessage, ChatUiFlags } from '@/api/generated';
-import { useChat, useConversationMessages } from '@/api/hooks';
-import {
-	clearConversationId,
-	loadConversationId,
-	saveConversationId,
-} from '@/lib/chatSession';
+import type { ChatMessage } from '@/api/generated';
+import { useChatContext } from '@/context/ChatContext';
 
 type Props = {
-	onChatFlags?: (flags: ChatUiFlags) => void;
 	className?: string;
 };
 
-const INITIAL_ASSISTANT_MESSAGE: ChatMessage = {
-	role: 'assistant',
-	content: 'Hello!',
-};
-
-export function ScenarioChatPanel({ onChatFlags, className }: Props) {
-	const [conversationId, setConversationId] = useState<string | null>(() =>
-		loadConversationId()
-	);
-	const { send, submitting, error: sendError } = useChat({ onChatFlags });
+export function ScenarioChatPanel({ className }: Props) {
 	const {
 		messages,
 		setMessages,
-		loading: historyLoading,
-		error: historyError,
-	} = useConversationMessages(conversationId);
+		send,
+		submitting,
+		sendError,
+		historyLoading,
+		historyError,
+		shouldFetchHistory,
+	} = useChatContext();
 	const [draft, setDraft] = useState('');
 	const messagesRef = useRef<HTMLDivElement>(null);
-	const visibleMessages =
-		messages.length > 0 || historyLoading ? messages : [INITIAL_ASSISTANT_MESSAGE];
+	const showInitialHistoryLoading = historyLoading && messages.length === 0;
+	const showEmptyHint = messages.length === 0 && !showInitialHistoryLoading;
 
 	useEffect(() => {
 		const el = messagesRef.current;
-		if (!el || visibleMessages.length === 0) return;
+		if (!el || messages.length === 0) return;
 		el.scrollTop = el.scrollHeight;
-	}, [visibleMessages.length]);
-
-	useEffect(() => {
-		if (historyError) {
-			clearConversationId();
-			setConversationId(null);
-		}
-	}, [historyError]);
+	}, [messages.length]);
 
 	async function handleSubmit(e: FormEvent) {
 		e.preventDefault();
@@ -56,17 +38,15 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 		setDraft('');
 
 		try {
-			const res = await send(content, conversationId);
-			saveConversationId(res.conversation_id);
-			setConversationId(res.conversation_id);
+			const res = await send(content);
 			setMessages((prev) => [...prev, { role: 'assistant', content: res.reply }]);
 		} catch {
 			setMessages((prev) => prev.slice(0, -1));
 		}
 	}
 
-	const error = sendError ?? historyError;
-	const busy = submitting || historyLoading;
+	const error = sendError ?? (shouldFetchHistory ? historyError : null);
+	const busy = submitting || showInitialHistoryLoading;
 
 	return (
 		<section
@@ -85,10 +65,14 @@ export function ScenarioChatPanel({ onChatFlags, className }: Props) {
 				ref={messagesRef}
 				className="mt-3 min-h-0 flex-1 space-y-2 overflow-y-auto overscroll-y-contain rounded-md border border-soil-100 bg-soil-50/50 p-3 text-sm"
 			>
-				{historyLoading ? (
+				{showInitialHistoryLoading ? (
 					<p className="text-xs text-soil-500">Loading conversation…</p>
+				) : showEmptyHint ? (
+					<p className="text-xs text-soil-500">
+						Ask the assistant to change the schedule, add tasks, or reassign work.
+					</p>
 				) : (
-					visibleMessages.map((m) => (
+					messages.map((m) => (
 						<div
 							key={`${m.role}:${m.content}`}
 							className={`rounded-md px-3 py-2 text-sm ${

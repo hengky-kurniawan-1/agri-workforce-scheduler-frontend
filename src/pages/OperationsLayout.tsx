@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { Outlet, useOutletContext, useSearchParams } from 'react-router-dom';
-import type { AssignmentsResult, ScheduleInfo } from '@/api/generated';
+import type { AssignmentsResult, ChatUiFlags, ScheduleInfo } from '@/api/generated';
 import type { Agronomist, Assignment, Field, HybridStep, Task } from '@/api/generated/types.gen';
 import { useAssignments, useSchedule } from '@/api/hooks';
+import { ChatProvider } from '@/context/ChatContext';
 import { resolvedTaskId, TASK_QUERY_KEY, urlSearchParamsWithTask } from '@/lib/urlQuery';
 
 export type OperationsOutletContext = {
@@ -79,6 +80,18 @@ export function OperationsLayout() {
 	const loading = scheduleLoading || assignmentsLoading;
 	const error = scheduleError ?? assignmentsError;
 
+	const onChatFlags = useCallback(
+		(flags: ChatUiFlags) => {
+			if (flags.schedule_updated || flags.map_updated || flags.roster_updated) {
+				void refetchSchedule();
+			}
+			if (flags.map_updated || flags.schedule_updated) {
+				void refetchAssignments({ refresh: false });
+			}
+		},
+		[refetchSchedule, refetchAssignments]
+	);
+
 	const outletContext = useMemo(
 		(): OperationsOutletContext => ({
 			searchParams,
@@ -122,7 +135,9 @@ export function OperationsLayout() {
 
 	return (
 		<div className="mx-auto flex w-full max-w-[1920px] min-h-0 flex-1 flex-col overflow-hidden px-4 py-4 sm:px-6 lg:px-6 xl:px-8">
-			<Outlet context={outletContext} />
+			<ChatProvider onChatFlags={onChatFlags}>
+				<Outlet context={outletContext} />
+			</ChatProvider>
 		</div>
 	);
 }
