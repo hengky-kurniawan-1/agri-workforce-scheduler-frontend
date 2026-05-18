@@ -21,6 +21,7 @@ type ChatContextValue = {
 	historyLoading: boolean;
 	historyError: string | null;
 	shouldFetchHistory: boolean;
+	conversationId: string | null;
 	clearConversation: () => void;
 };
 
@@ -58,6 +59,7 @@ export function ChatProvider({ onChatFlags, children }: ChatProviderProps) {
 			historyLoading,
 			historyError,
 			shouldFetchHistory,
+			conversationId,
 			clearConversation,
 		}),
 		[
@@ -69,6 +71,7 @@ export function ChatProvider({ onChatFlags, children }: ChatProviderProps) {
 			historyLoading,
 			historyError,
 			shouldFetchHistory,
+			conversationId,
 			clearConversation,
 		]
 	);

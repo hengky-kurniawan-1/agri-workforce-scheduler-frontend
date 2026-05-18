@@ -168,6 +168,7 @@ export function useChat(opts?: UseChatOpts) {
 		clearConversationId();
 		conversationIdRef.current = null;
 		setConversationId(null);
+		setError(null);
 	}, []);
 
 	const send = useCallback(

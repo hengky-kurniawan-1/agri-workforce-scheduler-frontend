@@ -16,6 +16,8 @@ export function ScenarioChatPanel({ className }: Props) {
 		historyLoading,
 		historyError,
 		shouldFetchHistory,
+		conversationId,
+		clearConversation,
 	} = useChatContext();
 	const [draft, setDraft] = useState('');
 	const messagesRef = useRef<HTMLDivElement>(null);
@@ -47,16 +49,40 @@ export function ScenarioChatPanel({ className }: Props) {
 
 	const error = sendError ?? (shouldFetchHistory ? historyError : null);
 	const busy = submitting || showInitialHistoryLoading;
+	const canReset = messages.length > 0 || conversationId != null;
+
+	function handleNewChat() {
+		if (busy || !canReset) return;
+		if (
+			messages.length > 0 &&
+			!window.confirm('Start a new chat? This clears the conversation in this tab.')
+		) {
+			return;
+		}
+		clearConversation();
+		setDraft('');
+	}
 
 	return (
 		<section
 			className={`flex min-h-0 flex-col overflow-hidden rounded-lg border border-soil-200 bg-white p-4 ${className ?? ''}`}
 		>
-			<h2 className="shrink-0 text-sm font-semibold text-soil-900">Assistant</h2>
+			<div className="flex shrink-0 items-start justify-between gap-2">
+				<h2 className="text-sm font-semibold text-soil-900">Assistant</h2>
+				<button
+					type="button"
+					onClick={handleNewChat}
+					disabled={busy || !canReset}
+					className="shrink-0 rounded-md border border-soil-200 bg-white px-2.5 py-1 text-[11px] font-medium text-soil-700 hover:bg-soil-50 disabled:opacity-50"
+				>
+					New chat
+				</button>
+			</div>
 			<p className="mt-1 shrink-0 text-[11px] leading-snug text-soil-400">
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">/chat</code>
 				{` · `}
-				History is kept for this browser tab session. Reloads assignments when{' '}
+				History is kept for this browser tab. Use <span className="font-medium text-soil-500">New chat</span>{' '}
+				to clear this thread; the next message starts a fresh conversation. Reloads assignments when{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">map_updated</code> or{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
 			</p>
