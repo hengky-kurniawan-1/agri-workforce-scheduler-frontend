@@ -1,34 +1,11 @@
-import { useOperationsOutlet } from '@/pages/OperationsLayout';
+import { AsyncPageShell } from '@/components/async/AsyncPageShell';
+import { useOperationsOutlet } from '@/context/OperationsContext';
 
 export function FieldsPage() {
 	const { fields, loading, error } = useOperationsOutlet();
 
-	if (loading) {
-		return (
-			<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-				<div className="flex items-center gap-2 rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
-					<span className="inline-block h-2 w-2 animate-pulse-soft rounded-full bg-leaf-500" />
-					Loading fields…
-				</div>
-			</div>
-		);
-	}
-
-	if (error) {
-		return (
-			<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
-				<div
-					className="rounded-lg border border-red-200 bg-red-50/90 p-4 text-sm text-red-800"
-					role="alert"
-				>
-					{error}
-				</div>
-			</div>
-		);
-	}
-
 	return (
-		<div className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto">
+		<AsyncPageShell loading={loading} error={error} loadingLabel="Loading fields…">
 			<div className="min-w-0">
 				<h2 className="text-sm font-semibold text-soil-900">Fields</h2>
 				<p className="mt-0.5 text-xs text-soil-500">All fields from the API.</p>
@@ -57,6 +34,6 @@ export function FieldsPage() {
 					})}
 				</ul>
 			)}
-		</div>
+		</AsyncPageShell>
 	);
 }

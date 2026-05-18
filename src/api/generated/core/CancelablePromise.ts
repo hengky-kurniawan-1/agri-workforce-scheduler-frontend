@@ -81,7 +81,7 @@ export class CancelablePromise<T> implements Promise<T> {
 	}
 
 	get [Symbol.toStringTag]() {
-		return "Cancellable Promise";
+		return 'Cancellable Promise';
 	}
 
 	public then<TResult1 = T, TResult2 = never>(

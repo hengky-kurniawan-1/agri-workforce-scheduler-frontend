@@ -81,8 +81,9 @@ export function ScenarioChatPanel({ className }: Props) {
 			<p className="mt-1 shrink-0 text-[11px] leading-snug text-soil-400">
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">/chat</code>
 				{` · `}
-				History is kept for this browser tab. Use <span className="font-medium text-soil-500">New chat</span>{' '}
-				to clear this thread; the next message starts a fresh conversation. Reloads assignments when{' '}
+				History is kept for this browser tab. Use{' '}
+				<span className="font-medium text-soil-500">New chat</span> to clear this thread; the next
+				message starts a fresh conversation. Reloads assignments when{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">map_updated</code> or{' '}
 				<code className="rounded bg-soil-100 px-0.5 font-mono text-[10px]">schedule_updated</code>
 			</p>

@@ -1,14 +1,14 @@
 import {
 	createContext,
+	type Dispatch,
+	type ReactNode,
+	type SetStateAction,
 	useContext,
 	useEffect,
 	useMemo,
 	useRef,
-	type Dispatch,
-	type ReactNode,
-	type SetStateAction,
 } from 'react';
-import type { ChatMessage, ChatResponse, ChatUiFlags } from '@/api/generated';
+import type { ChatMessage, ChatResponse } from '@/api/generated';
 import { useChat, useConversationMessages } from '@/api/hooks';
 import { loadConversationId } from '@/lib/chatSession';
 
@@ -28,16 +28,13 @@ type ChatContextValue = {
 const ChatContext = createContext<ChatContextValue | null>(null);
 
 type ChatProviderProps = {
-	onChatFlags?: (flags: ChatUiFlags) => void;
 	children: ReactNode;
 };
 
-export function ChatProvider({ onChatFlags, children }: ChatProviderProps) {
+export function ChatProvider({ children }: ChatProviderProps) {
 	const restoredConversationId = useRef(loadConversationId()).current;
-	const { send, submitting, error: sendError, conversationId, clearConversation } =
-		useChat({ onChatFlags });
-	const shouldFetchHistory =
-		conversationId != null && conversationId === restoredConversationId;
+	const { send, submitting, error: sendError, conversationId, clearConversation } = useChat();
+	const shouldFetchHistory = conversationId != null && conversationId === restoredConversationId;
 	const {
 		messages,
 		setMessages,

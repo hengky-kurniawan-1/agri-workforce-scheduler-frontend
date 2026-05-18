@@ -1,4 +1,6 @@
 import type { Agronomist, Assignment, Task } from '@/api/generated';
+import { ErrorAlert } from '@/components/async/ErrorAlert';
+import { LoadingCard } from '@/components/async/LoadingCard';
 
 type Props = {
 	tasks: Task[];
@@ -15,23 +17,11 @@ function agronomistLabel(agronomists: Agronomist[], id: string): string {
 
 export function TaskList({ tasks, assignments, agronomists, loading, error }: Props) {
 	if (loading) {
-		return (
-			<div className="flex items-center gap-2 rounded-lg border border-soil-200 bg-white p-4 text-sm text-soil-600">
-				<span className="inline-block h-2 w-2 animate-pulse-soft rounded-full bg-leaf-500" />
-				Loading tasks…
-			</div>
-		);
+		return <LoadingCard label="Loading tasks…" />;
 	}
 
 	if (error) {
-		return (
-			<div
-				className="rounded-lg border border-red-200 bg-red-50/90 p-4 text-sm text-red-800"
-				role="alert"
-			>
-				{error}
-			</div>
-		);
+		return <ErrorAlert message={error} />;
 	}
 
 	if (!tasks.length) {

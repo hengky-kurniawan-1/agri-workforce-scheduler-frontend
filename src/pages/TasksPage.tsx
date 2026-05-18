@@ -1,5 +1,5 @@
 import { TaskList } from '@/components/TaskList';
-import { useOperationsOutlet } from '@/pages/OperationsLayout';
+import { useOperationsOutlet } from '@/context/OperationsContext';
 
 export function TasksPage() {
 	const { tasks, assignments, agronomists, loading, error } = useOperationsOutlet();

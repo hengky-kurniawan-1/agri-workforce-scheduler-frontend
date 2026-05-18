@@ -1,7 +1,9 @@
+import { QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { configureOpenAPI } from './api/openapi';
+import { queryClient } from './api/queryClient';
 import './styles/globals.css';
 import './styles/animations.css';
 
@@ -14,6 +16,8 @@ if (!el) {
 
 createRoot(el).render(
 	<StrictMode>
-		<App />
+		<QueryClientProvider client={queryClient}>
+			<App />
+		</QueryClientProvider>
 	</StrictMode>
 );

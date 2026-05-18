@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useOperationsOutlet } from '@/context/OperationsContext';
 import { buildAgronomistRoutes } from '@/lib/routeGeometry';
-import { useOperationsOutlet } from '@/pages/OperationsLayout';
 import { AgronomistRouteList } from './AgronomistRouteList';
 import { ScenarioChatPanel } from './ScenarioChatPanel';
 import { ScenarioRouteMap } from './ScenarioRouteMap';
 
 export function Dashboard() {
-	const {
-		tasks,
-		fields,
-		assignments,
-		agronomists,
-		fieldsLoading,
-	} = useOperationsOutlet();
+	const { tasks, fields, assignments, agronomists, fieldsLoading } = useOperationsOutlet();
 
 	const routeMapKey = useMemo(
 		() =>
