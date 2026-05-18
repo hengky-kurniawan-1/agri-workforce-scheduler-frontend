@@ -35,6 +35,7 @@ describe('buildAgronomistRoutes', () => {
 
 		const routes = buildAgronomistRoutes(agronomists, tasks, fields, assignments);
 		expect(routes).toHaveLength(1);
+		expect(routes[0]?.skills).toEqual(['irrigation']);
 		expect(routes[0]?.stops.map((s) => s.kind)).toEqual(['home', 'task', 'task']);
 		expect(routes[0]?.stops[1]?.taskId).toBe('t1');
 		expect(routes[0]?.stops[2]?.taskId).toBe('t2');

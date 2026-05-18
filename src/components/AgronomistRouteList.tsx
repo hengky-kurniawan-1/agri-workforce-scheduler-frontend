@@ -64,7 +64,15 @@ export function AgronomistRouteList({
 										className="mr-2 inline-block h-2 w-6 rounded-sm align-middle"
 										style={{ background: r.color }}
 									/>
-									{r.agronomistName}{' '}
+									{r.agronomistName}
+									{r.skills.length > 0 ? (
+										<>
+											{' '}
+											<span className="text-xs font-normal text-soil-500">
+												· {r.skills.join(', ')}
+											</span>
+										</>
+									) : null}{' '}
 									<span className="font-mono text-xs font-normal text-soil-500">
 										({r.agronomistId})
 									</span>

@@ -13,6 +13,7 @@ export type RouteStop = {
 export type AgronomistRoutePlan = {
 	agronomistId: string;
 	agronomistName: string;
+	skills: Agronomist['skills'];
 	color: string;
 	stops: RouteStop[];
 	/** Leaflet `[lat, lng][]` */
@@ -98,6 +99,7 @@ export function buildAgronomistRoutes(
 		return {
 			agronomistId: agr.id,
 			agronomistName: agr.name,
+			skills: agr.skills,
 			color,
 			stops,
 			positions,
