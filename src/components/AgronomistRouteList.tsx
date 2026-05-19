@@ -93,6 +93,14 @@ export function AgronomistRouteList({
 											) : (
 												<>
 													Task {s.taskId} @ {s.fieldName} ({s.fieldId})
+													{s.priority !== undefined ? (
+														<>
+															{' '}
+															<span className="rounded-full bg-soil-100 px-2 py-0.5 text-xs text-soil-600">
+																P{s.priority}
+															</span>
+														</>
+													) : null}
 													{s.startMinute !== undefined ? (
 														<span className="text-soil-500"> · start {s.startMinute}m</span>
 													) : null}

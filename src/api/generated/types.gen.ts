@@ -34,6 +34,7 @@ export type Assignment = {
 	travel_minutes: number;
 	reasoning?: string;
 	agronomist_skills?: Array<'general' | 'pest' | 'soil' | 'irrigation'>;
+	priority?: number | null;
 };
 
 export type AssignmentsResult = {

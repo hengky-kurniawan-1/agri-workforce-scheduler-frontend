@@ -8,6 +8,7 @@ export type RouteStop = {
 	lng: number;
 	taskId?: string;
 	startMinute?: number;
+	priority?: number;
 };
 
 export type AgronomistRoutePlan = {
@@ -92,6 +93,7 @@ export function buildAgronomistRoutes(
 				lng,
 				taskId: task.id,
 				startMinute: as.start_minute,
+				priority: task.priority,
 			});
 		}
 

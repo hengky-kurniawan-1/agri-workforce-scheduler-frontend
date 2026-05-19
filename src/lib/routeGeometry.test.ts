@@ -38,7 +38,9 @@ describe('buildAgronomistRoutes', () => {
 		expect(routes[0]?.skills).toEqual(['irrigation']);
 		expect(routes[0]?.stops.map((s) => s.kind)).toEqual(['home', 'task', 'task']);
 		expect(routes[0]?.stops[1]?.taskId).toBe('t1');
+		expect(routes[0]?.stops[1]?.priority).toBe(1);
 		expect(routes[0]?.stops[2]?.taskId).toBe('t2');
+		expect(routes[0]?.stops[2]?.priority).toBe(2);
 	});
 
 	it('collapses consecutive visits to the same field', () => {
