@@ -100,10 +100,11 @@ export function useConversationMessages(
 	});
 
 	useEffect(() => {
-		if (!conversationId || !enabled) {
+		if (!conversationId) {
 			setMessages([]);
 			return;
 		}
+		if (!enabled) return;
 		if (query.data) {
 			setMessages(displayMessages(query.data));
 		}
